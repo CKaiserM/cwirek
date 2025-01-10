@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .models import Profile, Yard
-from .forms import YardForm, SignUpForm
+from .forms import YardForm, SignUpForm, ProfilePicturesForm, UpdateUserForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
 from django import forms
@@ -100,15 +100,21 @@ def register_user(request):
     return render(request, 'register.html', {'form':form})
 
 def update_user(request):
-    if request.user.is_authenticated:
-        current_user = User.objects.get(id=request.user.id)
-        form = SignUpForm(request.POST or None, instance=current_user)
-        if form.is_valid():
-            form.save()
-            login(request, current_user)
-            messages.success(request, ("Your profile has been updated"))
-            return redirect('home')
-        return render(request, 'update_user.html', {'form':form})
-    else:
-        messages.success(request, ("You must be log in to update your profile"))
-        return redirect('home')
+	if request.user.is_authenticated:
+		current_user = User.objects.get(id=request.user.id)
+		profile_user = Profile.objects.get(user__id=request.user.id)
+		# Get Forms
+		user_form = UpdateUserForm(request.POST or None, request.FILES or None, instance=current_user)
+		profile_form = ProfilePicturesForm(request.POST or None, request.FILES or None, instance=profile_user)
+		if user_form.is_valid() and profile_form.is_valid():
+			user_form.save()
+			profile_form.save()
+
+			login(request, current_user)
+			messages.success(request, ("Your Profile Has Been Updated!"))
+			return redirect('home')
+
+		return render(request, "update_user.html", {'user_form':user_form, 'profile_form':profile_form})
+	else:
+		messages.success(request, ("You Must Be Logged In To View That Page..."))
+		return redirect('home')
