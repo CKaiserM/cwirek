@@ -8,11 +8,14 @@ class Yard(models.Model):
     body = models.CharField(max_length=200)
     created_at = models.DateTimeField(auto_now_add=True)
     likes = models.ManyToManyField(User, related_name="yard_like", blank=True)
+    dislikes = models.ManyToManyField(User, related_name="yard_dislike", blank=True)
 
-    # Keep track of likes
+    # Keep track of likes and dislikes
 
     def number_of_likes(self):
         return self.likes.count()
+    def number_of_dislikes(self):
+        return self.dislikes.count()
 
     def __str__(self):
         return (f"{self.user} " f"({self.created_at:%Y-%m-%d %H:%M}): " f"{self.body}...")

@@ -15,7 +15,7 @@ class YardForm(forms.ModelForm):
     body = forms.CharField(required=True, widget=forms.widgets.Textarea(attrs={"placeholder": "Enter your message.", "class":"form-control",}), label="", )
     class Meta:
         model = Yard
-        exclude = ("user", "likes", )
+        exclude = ("user", "likes", "dislikes")
 
 class SignUpForm(UserCreationForm):
     email = forms.EmailField(label="", widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Email Address'}))

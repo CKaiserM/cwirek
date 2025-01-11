@@ -26,6 +26,12 @@
                             {% else %}
                             - {{yard.number_of_likes}} Likes - <a href="{% url 'yard_like' yard.id %}">Like</a>
                             {% endif %}
+
+                            {% if user in yard.dislikes.all %}
+                            - {{yard.number_of_dislikes}} Disikes - <a href="{% url 'yard_dislike' yard.id %}">Undislike</a>
+                            {% else %}
+                            - {{yard.number_of_dislikes}} Dislikes - <a href="{% url 'yard_dislike' yard.id %}">Dislike</a>
+                            {% endif %}
                         </small>
                 </div><br/><br/>
               </div>

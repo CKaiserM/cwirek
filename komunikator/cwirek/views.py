@@ -122,11 +122,32 @@ def update_user(request):
 def yard_like(request, pk):
     if request.user.is_authenticated:  
         yard = get_object_or_404(Yard, id=pk)
+        
+        # if dislike exists, remove
+        if yard.dislikes.filter(id=request.user.id):
+            yard.dislikes.remove(request.user)
 
         if yard.likes.filter(id=request.user.id):
            yard.likes.remove(request.user)
         else:
             yard.likes.add(request.user)  
+    else:
+        return redirect('home')
+    return redirect('home')
+
+def yard_dislike(request, pk):
+    if request.user.is_authenticated:  
+        yard = get_object_or_404(Yard, id=pk)
+
+        # if like exists, remove
+        if yard.likes.filter(id=request.user.id):
+            yard.likes.remove(request.user)  
+            
+        if yard.dislikes.filter(id=request.user.id):
+           yard.dislikes.remove(request.user)
+        else:
+            yard.dislikes.add(request.user)
+
     else:
         return redirect('home')
     return redirect('home')
