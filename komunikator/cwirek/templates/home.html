@@ -21,6 +21,7 @@
                         {{ yard.body }}<br/>
                         <small class="text-muted">
                             {{ yard.created_at }} By @{{ yard.user.username|lower}}
+                            - {{yard.number_of_likes}} Likes - <a href="{% url 'yard_like' yard.id %}">Like</a>
                         </small>
                 </div><br/><br/>
               </div>
