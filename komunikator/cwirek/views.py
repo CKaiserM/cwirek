@@ -57,6 +57,27 @@ def profile(request, pk):
         messages.success(request, ("You must be logged in to view this page..."))
         return redirect('home')
 
+def follow(request, pk):
+    if request.user.is_authenticated:
+        profile = Profile.objects.get(user_id=pk)
+        request.user.profile.follows.add(profile)
+        request.user.profile.save()
+        return redirect(request.META.get("HTTP_REFERER"))
+    else:
+        messages.success(request, ("You must be logged in to view this page..."))
+        return redirect(request.META.get("HTTP_REFERER"))
+
+def unfollow(request, pk):
+    if request.user.is_authenticated:
+        profile = Profile.objects.get(user_id=pk)
+        request.user.profile.follows.remove(profile)
+        request.user.profile.save()
+        return redirect(request.META.get("HTTP_REFERER"))
+    else:
+        messages.success(request, ("You must be logged in to view this page..."))
+        return redirect(request.META.get("HTTP_REFERER"))
+    
+
 def login_user(request):
     if request.method == "POST":
         username=request.POST['username']
@@ -162,4 +183,20 @@ def yard_show(request, pk):
         return redirect('home')
 
     #if request.user.is_authenticated:
+
+def followers(request, pk):
+    if request.user.is_authenticated:
+        if request.user.id == pk:
+            profile = Profile.objects.get(user_id=pk)
+            return render(request, 'followers.html', {"profiles":profile})
+        else:
+            messages.success(request, ("That is not your profile page"))
+            return redirect('home')
+    else:
+        messages.success(request, ("You must be logged in to view this page..."))
+        return redirect('home')
+
+
+
+
 
