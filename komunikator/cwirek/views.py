@@ -151,3 +151,15 @@ def yard_dislike(request, pk):
     else:
         return redirect('home')    
     return redirect(request.META.get("HTTP_REFERER"))
+
+def yard_show(request, pk):
+    yard = get_object_or_404(Yard, id=pk)
+    
+    if yard:
+        return render(request, "show_yard.html", {'yard':yard})
+    else:
+        messages.success(request, ("This post does not exist"))
+        return redirect('home')
+
+    #if request.user.is_authenticated:
+

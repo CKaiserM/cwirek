@@ -38,6 +38,7 @@
                             {% else %}
                             - {{yard.number_of_dislikes}} Dislikes - <a href="{% url 'yard_dislike' yard.id %}">Dislike</a>
                             {% endif %}
+                            <a href="{% url 'yard_show' yard.id %}">Share</a>
                         </small>
                 </div><br/><br/>
               </div>
