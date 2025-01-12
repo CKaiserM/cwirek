@@ -21,6 +21,17 @@
                         {{ yard.body }}<br/>
                         <small class="text-muted">
                             {{ yard.created_at }} By @{{ yard.user.username|lower}}
+                            {% if user in yard.likes.all %}
+                            - {{yard.number_of_likes}} Likes - <a href="{% url 'yard_like' yard.id %}">Unlike</a>
+                            {% else %}
+                            - {{yard.number_of_likes}} Likes - <a href="{% url 'yard_like' yard.id %}">Like</a>
+                            {% endif %}
+
+                            {% if user in yard.dislikes.all %}
+                            - {{yard.number_of_dislikes}} Disikes - <a href="{% url 'yard_dislike' yard.id %}">Undislike</a>
+                            {% else %}
+                            - {{yard.number_of_dislikes}} Dislikes - <a href="{% url 'yard_dislike' yard.id %}">Dislike</a>
+                            {% endif %}
                         </small>
                 </div><br/><br/>
               </div>

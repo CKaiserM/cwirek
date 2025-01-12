@@ -9,4 +9,6 @@ urlpatterns = [
     path('logout', views.logout_user, name="logout"),
     path('register/', views.register_user, name="register"),
     path('update_user/', views.update_user, name="update_user"),
+    path('yard_likes/<int:pk>', views.yard_like, name="yard_like"),
+    path('yard_dislikes/<int:pk>', views.yard_dislike, name="yard_dislike"),
     ]

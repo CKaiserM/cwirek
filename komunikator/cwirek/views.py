@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from .models import Profile, Yard
 from .forms import YardForm, SignUpForm, ProfilePicturesForm, UpdateUserForm
@@ -118,3 +118,36 @@ def update_user(request):
 	else:
 		messages.success(request, ("You Must Be Logged In To View That Page..."))
 		return redirect('home')
+     
+def yard_like(request, pk):
+    if request.user.is_authenticated:  
+        yard = get_object_or_404(Yard, id=pk)
+        
+        # if dislike exists, remove
+        if yard.dislikes.filter(id=request.user.id):
+            yard.dislikes.remove(request.user)
+
+        if yard.likes.filter(id=request.user.id):
+           yard.likes.remove(request.user)
+        else:
+            yard.likes.add(request.user)  
+    else:
+        return redirect('home')    
+    return redirect(request.META.get("HTTP_REFERER"))
+
+def yard_dislike(request, pk):
+    if request.user.is_authenticated:  
+        yard = get_object_or_404(Yard, id=pk)
+
+        # if like exists, remove
+        if yard.likes.filter(id=request.user.id):
+            yard.likes.remove(request.user)  
+            
+        if yard.dislikes.filter(id=request.user.id):
+           yard.dislikes.remove(request.user)
+        else:
+            yard.dislikes.add(request.user)
+
+    else:
+        return redirect('home')    
+    return redirect(request.META.get("HTTP_REFERER"))
