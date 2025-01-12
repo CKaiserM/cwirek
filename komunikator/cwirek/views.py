@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from .models import Profile, Yard
-from .forms import YardForm, SignUpForm, ProfilePicturesForm, UpdateUserForm
+from .forms import YardForm, SignUpForm, ProfileMiscForm, UpdateUserForm
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
 from django import forms
@@ -105,7 +105,7 @@ def update_user(request):
 		profile_user = Profile.objects.get(user__id=request.user.id)
 		# Get Forms
 		user_form = UpdateUserForm(request.POST or None, request.FILES or None, instance=current_user)
-		profile_form = ProfilePicturesForm(request.POST or None, request.FILES or None, instance=profile_user)
+		profile_form = ProfileMiscForm(request.POST or None, request.FILES or None, instance=profile_user)
 		if user_form.is_valid() and profile_form.is_valid():
 			user_form.save()
 			profile_form.save()
@@ -151,3 +151,15 @@ def yard_dislike(request, pk):
     else:
         return redirect('home')    
     return redirect(request.META.get("HTTP_REFERER"))
+
+def yard_show(request, pk):
+    yard = get_object_or_404(Yard, id=pk)
+    
+    if yard:
+        return render(request, "show_yard.html", {'yard':yard})
+    else:
+        messages.success(request, ("This post does not exist"))
+        return redirect('home')
+
+    #if request.user.is_authenticated:
+
