@@ -132,8 +132,8 @@ def yard_like(request, pk):
         else:
             yard.likes.add(request.user)  
     else:
-        return redirect('home')
-    return redirect('home')
+        return redirect('home')    
+    return redirect(request.META.get("HTTP_REFERER"))
 
 def yard_dislike(request, pk):
     if request.user.is_authenticated:  
@@ -149,5 +149,5 @@ def yard_dislike(request, pk):
             yard.dislikes.add(request.user)
 
     else:
-        return redirect('home')
-    return redirect('home')
+        return redirect('home')    
+    return redirect(request.META.get("HTTP_REFERER"))
