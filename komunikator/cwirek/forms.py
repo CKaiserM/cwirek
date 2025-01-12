@@ -3,19 +3,25 @@ from .models import Yard, Profile
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.contrib.auth.models import User
 
-class ProfilePicturesForm(forms.ModelForm):
+class ProfileMiscForm(forms.ModelForm):
     profile_image = forms.ImageField(label="Profile Picture")
+    profile_bio = forms.CharField(label="Profile Bio", widget=forms.Textarea(attrs={'class':'form-control', 'placeholder':'Profile Bio'}))
+    homepage_link = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Personal homepage'}))
+    facebook_link = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Facebook link'}))
+    instagram_link = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Instagram link'}))
+    linkedin_link = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Linkedin link'}))
+    youtube_link = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Linkedin link'}))
 
     class Meta:
         model = Profile
-        fields = ('profile_image', )
+        fields = ('profile_image', 'profile_bio', 'homepage_link', 'facebook_link', 'instagram_link', 'linkedin_link','youtube_link',)
 
 
 class YardForm(forms.ModelForm):
     body = forms.CharField(required=True, widget=forms.widgets.Textarea(attrs={"placeholder": "Enter your message.", "class":"form-control",}), label="", )
     class Meta:
         model = Yard
-        exclude = ("user", "likes", "dislikes")
+        exclude = ("user", "likes", "dislikes",)
 
 class SignUpForm(UserCreationForm):
     email = forms.EmailField(label="", widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Email Address'}))
