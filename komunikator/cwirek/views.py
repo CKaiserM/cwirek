@@ -65,7 +65,7 @@ def follow(request, pk):
         return redirect(request.META.get("HTTP_REFERER"))
     else:
         messages.success(request, ("You must be logged in to view this page..."))
-        return redirect(request.META.get("HTTP_REFERER"))
+        return redirect('home')
 
 def unfollow(request, pk):
     if request.user.is_authenticated:
@@ -75,7 +75,31 @@ def unfollow(request, pk):
         return redirect(request.META.get("HTTP_REFERER"))
     else:
         messages.success(request, ("You must be logged in to view this page..."))
-        return redirect(request.META.get("HTTP_REFERER"))
+        return redirect('home')
+    
+def followers(request, pk):
+    if request.user.is_authenticated:
+        if request.user.id == pk:
+            profiles = Profile.objects.get(user_id=pk)
+            return render(request, 'followers.html', {"profiles":profiles})
+        else:
+            messages.success(request, ("That is not your profile page"))
+            return redirect('home')
+    else:
+        messages.success(request, ("You must be logged in to view this page..."))
+        return redirect('home')
+    
+def follows(request, pk):
+    if request.user.is_authenticated:
+        if request.user.id == pk:
+            profiles = Profile.objects.get(user_id=pk)
+            return render(request, 'follows.html', {"profiles":profiles})
+        else:
+            messages.success(request, ("That is not your profile page"))
+            return redirect('home')
+    else:
+        messages.success(request, ("You must be logged in to view this page..."))
+        return redirect('home')
     
 
 def login_user(request):
@@ -184,17 +208,7 @@ def yard_show(request, pk):
 
     #if request.user.is_authenticated:
 
-def followers(request, pk):
-    if request.user.is_authenticated:
-        if request.user.id == pk:
-            profile = Profile.objects.get(user_id=pk)
-            return render(request, 'followers.html', {"profiles":profile})
-        else:
-            messages.success(request, ("That is not your profile page"))
-            return redirect('home')
-    else:
-        messages.success(request, ("You must be logged in to view this page..."))
-        return redirect('home')
+
 
 
 

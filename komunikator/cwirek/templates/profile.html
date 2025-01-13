@@ -89,7 +89,7 @@
                 {% endfor %}
                 </div>
                 <div class="card-footer">
-                  <a href="{% url 'followers' profile.user.id %}"><i class="fa-solid fa-user-secret"></i></a>
+                  <a href="{% url 'follows' profile.user.id %}"><i class="fa-solid fa-user-secret"></i></a>
                   </div>
             </div>          
         <br/><br/>
@@ -100,7 +100,7 @@
               <p class="card-text">
                 {% for following in profile.followed_by.all|slice:10 %}
                 <a href="{% url 'profile' following.user.id %}">@{{ following }}</a>
-                {% if following in profile.followed_by.all %}
+                {% if following in profile.follows.all %}
                 <a href="{% url 'unfollow' following.user.id %}"><i class="fa-solid fa-user-minus"></i></a>
                 {% else %}
                 <a href="{% url 'follow' following.user.id %}"><i class="fa-solid fa-user-plus"></i></a>
