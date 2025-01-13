@@ -4,7 +4,6 @@
 <div class="container text-center">
 <div class="row">
     <div class="col-8">
-        {% for yard in yards %}
             <div class="alert alert-dark" role="alert">
             <div class="container">
                 <div class="row">
@@ -32,19 +31,13 @@
                             {% else %}
                             - {{yard.number_of_dislikes}} Dislikes - <a href="{% url 'yard_dislike' yard.id %}">Dislike</a>
                             {% endif %}
-                          
-                            <a href="{% url 'yard_show' yard.id %}">Share</a>
-
                         </small>
                 </div><br/><br/>
               </div>
             </div>
           </div>
-        {% endfor %}
-    </div>
 
-    
-    <div class="col-4">
+
         {% if form %}
         <form method=POST>
         {% csrf_token %}
@@ -52,6 +45,6 @@
             <button type="submit" class="btn btn-secondary">Submit</button>
         </form>
         {% endif %}
-  </div>
+    </div>
 </div></div>
 {% endblock %}
