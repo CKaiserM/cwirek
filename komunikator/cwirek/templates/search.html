@@ -13,7 +13,9 @@
 </form>
 
 <br />
-{% if searched %} {% for yard in searched %}
+{% if search %} Results for {{search}}:
+<br /><br /><br />
+{% endif %} {% if found_yard %} {% for yard in found_yard %}
 <div class="alert alert-dark" role="alert">
   <div class="container">
     <div class="row">
@@ -58,4 +60,41 @@
   </div>
 </div>
 
+{% endfor %} {% endif %} {% if found_user %} {% for result in found_user %}
+
+<div class="card mb-3" style="max-width: 540px">
+  <div class="row g-0">
+    <div class="col-md-4">
+      {% if result.profile.profile_image %}
+      <img
+        src="{{ result.profile.profile_image.url }}"
+        class="img-fluid rounded-start"
+        alt=""
+      />
+      {% else %}
+      <img
+        src="{% static 'images/default_profile_pic.png' %}"
+        class="img-fluid rounded-start"
+        alt="{{profile.user.username}}"
+      />
+      {% endif%}
+    </div>
+    <div class="col-md-8">
+      <div class="card-body">
+        <h5 class="card-title">{{ result.profile.user.username}}</h5>
+        <p class="card-text">
+          <a href="{% url 'profile' result.profile.user.id %}"
+            >@{{ result.profile.user.username|lower}}</a
+          >
+        </p>
+        <p class="card-text">
+          <small class="text-body-secondary"
+            >Last updated: {{result.profile.date_modified}}</small
+          >
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+<br /><br /><br />
 {% endfor %} {% endif %} {% endblock %}

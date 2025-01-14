@@ -16,8 +16,9 @@ urlpatterns = [
     path('yard_show/<int:pk>', views.yard_show, name="yard_show"),
     path('yard_delete/<int:pk>', views.yard_delete, name="yard_delete"),
     path('yard_edit/<int:pk>', views.yard_edit, name="yard_edit"),
-    path('yard_search', views.yard_search, name="search"),
+    path('yard_search', views.yard_search, name="search_yard"),
     path('user_search', views.user_search, name="search_user"),
+    path('search/', views.search, name="search"),
     path('follow/<int:pk>', views.follow, name="follow"),
     path('unfollow/<int:pk>', views.unfollow, name="unfollow"),
     ]

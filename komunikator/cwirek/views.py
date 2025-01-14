@@ -266,6 +266,18 @@ def user_search(request):
     else:
         messages.success(request, ("Sorry, nothing found"))
         return render(request, "search_users.html", {})
+    
+def search(request):
+    if request.method == "POST":
+        #grab search phrase
+        search = request.POST['search']
+        #search the DB
+        found_user = User.objects.filter(username__contains=search)
+        found_yard = Yard.objects.filter(body__contains=search)
+        return render(request, "search.html", {'search':search, 'found_user':found_user, 'found_yard':found_yard})
+    else:
+        messages.success(request, ("Sorry, nothing found"))
+        return render(request, "search.html", {})
 
 
 
