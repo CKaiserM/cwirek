@@ -57,6 +57,51 @@ def profile(request, pk):
         messages.success(request, ("You must be logged in to view this page..."))
         return redirect('home')
 
+def follow(request, pk):
+    if request.user.is_authenticated:
+        profile = Profile.objects.get(user_id=pk)
+        request.user.profile.follows.add(profile)
+        request.user.profile.save()
+        return redirect(request.META.get("HTTP_REFERER"))
+    else:
+        messages.success(request, ("You must be logged in to view this page..."))
+        return redirect('home')
+
+def unfollow(request, pk):
+    if request.user.is_authenticated:
+        profile = Profile.objects.get(user_id=pk)
+        request.user.profile.follows.remove(profile)
+        request.user.profile.save()
+        return redirect(request.META.get("HTTP_REFERER"))
+    else:
+        messages.success(request, ("You must be logged in to view this page..."))
+        return redirect('home')
+    
+def followers(request, pk):
+    if request.user.is_authenticated:
+        if request.user.id == pk:
+            profiles = Profile.objects.get(user_id=pk)
+            return render(request, 'followers.html', {"profiles":profiles})
+        else:
+            messages.success(request, ("That is not your profile page"))
+            return redirect('home')
+    else:
+        messages.success(request, ("You must be logged in to view this page..."))
+        return redirect('home')
+    
+def follows(request, pk):
+    if request.user.is_authenticated:
+        if request.user.id == pk:
+            profiles = Profile.objects.get(user_id=pk)
+            return render(request, 'follows.html', {"profiles":profiles})
+        else:
+            messages.success(request, ("That is not your profile page"))
+            return redirect('home')
+    else:
+        messages.success(request, ("You must be logged in to view this page..."))
+        return redirect('home')
+    
+
 def login_user(request):
     if request.method == "POST":
         username=request.POST['username']
@@ -162,4 +207,78 @@ def yard_show(request, pk):
         return redirect('home')
 
     #if request.user.is_authenticated:
+def yard_delete(request, pk):
+    if request.user.is_authenticated:  
+        yard = get_object_or_404(Yard, id=pk)
+        #check ownership
+        if request.user.username == yard.user.username:
+            #delete
+            yard.delete()
+            return redirect(request.META.get("HTTP_REFERER"))
+        else:
+            messages.success(request, ("not your yard"))
+            return redirect(request.META.get("HTTP_REFERER"))
+    else:
+        messages.success(request, ("Please log in."))
+        return redirect('login')
+
+def yard_edit(request, pk):
+    if request.user.is_authenticated:
+        yard = get_object_or_404(Yard, id=pk)
+        if request.user.username == yard.user.username:  
+            
+            form = YardForm(request.POST or None, instance=yard)
+
+            #edit post
+            if request.method == "POST":
+                if form.is_valid():
+                    yards = form.save(commit=False)
+                    yards.user = request.user
+                    yards.save()
+                    messages.success(request, ("It is done!"))
+                    return redirect('home')
+            else:
+                return render(request, "edit_yard.html", {'form':form, 'yard':yard})
+        else:
+            messages.success(request, ("not your yard"))
+            return redirect('home')
+    else:
+        messages.success(request, ("Please log in."))
+        return redirect('login')
+
+def yard_search(request):
+    if request.method == "POST":
+        #grab search phrase
+        search = request.POST['search']
+        #search the DB
+        searched = Yard.objects.filter(body__contains=search)
+        return render(request, "search_yard.html", {'search':search, 'searched':searched})
+    else:
+        return render(request, "search_yard.html", {})
+
+def user_search(request):
+    if request.method == "POST":
+        #grab search phrase
+        search = request.POST['search']
+        #search the DB
+        searched = User.objects.filter(username__contains=search)
+        return render(request, "search_users.html", {'search':search, 'searched':searched})
+    else:
+        messages.success(request, ("Sorry, nothing found"))
+        return render(request, "search_users.html", {})
+    
+def search(request):
+    if request.method == "POST":
+        #grab search phrase
+        search = request.POST['search']
+        #search the DB
+        found_user = User.objects.filter(username__contains=search)
+        found_yard = Yard.objects.filter(body__contains=search)
+        return render(request, "search.html", {'search':search, 'found_user':found_user, 'found_yard':found_yard})
+    else:
+        messages.success(request, ("Sorry, nothing found"))
+        return render(request, "search.html", {})
+
+
+
 
