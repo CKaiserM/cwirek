@@ -1,0 +1,40 @@
+{% load rest_framework %}
+
+{% load static %} 
+
+{% for yard in yards %}
+     <div class="alert alert-dark" role="alert">
+        <div class="container">
+          <div class="row">
+            <div class="col-1">
+                {% if yard.user.profile.profile_image %}
+                <img
+                  src="{{ yard.user.profile.profile_image.url }}"
+                  alt=""
+                  class="rounded-circle"
+                  width="50"
+                  height="50"
+                />
+                {% else %}
+                <img
+                  src="{% static 'img/default_profile_pic.png' %}"
+                  alt="{{yard.user.username}}"
+                  class="rounded-circle"
+                  width="50"
+                  height="50"
+                />
+                {% endif %}
+            </div>
+            <div class="col-10">
+                {{ yard.body }}<br />
+                <small class="text-muted">
+                  {{ yard.created_at }} By @{{ yard.user.username|lower}} 
+  
+                  
+                </small>
+            </div>
+            <br /><br />
+          </div>
+        </div>
+      </div>
+{% endfor %}

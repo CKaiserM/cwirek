@@ -1,0 +1,17 @@
+{% extends 'base.html' %} 
+{% load static %} 
+{% load rest_framework %}
+{% block content %}
+<div class="container-xl">
+    <div class="row">
+        <div class="col-12">        
+            {% include 'yard/post.html' %}
+        </div>
+    </div>
+  <div class="row">
+    <div class="col-12">
+        {% include 'yard/yard.html' %}
+    </div>
+  </div>
+</div>
+{% endblock %}

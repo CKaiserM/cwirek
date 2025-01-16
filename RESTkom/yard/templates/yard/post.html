@@ -1,0 +1,11 @@
+{% if form %}
+<form method="POST">
+    
+    <div class="input-group mb-3">
+        <form method="POST">
+            {% csrf_token %} {{ form.as_p }}
+            <button type="submit" class="btn btn-secondary">Submit</button>
+          </form>
+      </div>
+  </form>
+  {% endif %}
