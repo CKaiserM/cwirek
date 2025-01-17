@@ -6,7 +6,7 @@ from . import views
 urlpatterns = [
     path('', views.HomeView.as_view(), name="home"),
     path('yard/', views.YardView.as_view()),
-    path('profile_list/', views.profile_list, name="profile_list"),
+    path('profile_list/', views.ProfileListView.as_view(), name="profile_list"),
     path('profile/<int:pk>', views.ProfileView.as_view(), name="profile"),
     path('profile/<int:pk>/followers', views.followers, name="followers"),
     path('profile/<int:pk>/follows', views.follows, name="follows"),
@@ -24,4 +24,6 @@ urlpatterns = [
     path('search/', views.search, name="search"),
     path('follow/<int:pk>', views.follow, name="follow"),
     path('unfollow/<int:pk>', views.unfollow, name="unfollow"),
+    path('yard/<int:pk>/comment', views.PostCommentView.as_view(), name="comment"),
+    path('yard/<int:pk>/reply', views.PostReplyView.as_view(), name="reply"),
 ]

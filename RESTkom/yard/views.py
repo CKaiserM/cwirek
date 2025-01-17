@@ -13,8 +13,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .serializers import UserSerializer, YardSerializer, ProfileSerializer
-from .models import Yard, Profile, User
-from .forms import YardForm, SignUpForm, UpdateUserForm, ProfileMiscForm
+from .models import Yard, Profile, User, CommentYard
+from .forms import YardForm, SignUpForm, UpdateUserForm, ProfileMiscForm, CommentYardForm
 
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -63,8 +63,7 @@ class HomeView(APIView):
     def get(self, request):
         yards = Yard.objects.all().order_by("-created_at")
         form = YardForm(request.POST or None)
-        yard_user = Profile.objects.get(user_id=request.user)
-        
+        yard_user = request.user
         
         return Response({"yards":yards, "form":form, 'yard_user': yard_user})
     
@@ -147,7 +146,33 @@ class ProfileView(APIView):
         current_user_profile.save()
         return Response({"profile":profile, "yards":yards})
 
-   
+class ProfileListView(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'profile/profile_list.html'
+
+    def get(self, request):
+        if request.user.is_authenticated:
+            profiles = Profile.objects.exclude(user=request.user)
+            return Response({"profiles":profiles})
+        else:
+            messages.success(request, ("You must be logged in to view this page..."))
+            return redirect('home')           
+
+class PostCommentView(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    model = CommentYard
+    template_name = 'yard/comment.html'
+    fields = '__all__'
+    
+class PostReplyView(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'yard/reply.html'
+
+    def get(self, request):
+        profiles = Profile.objects.exclude(user=request.user)
+        return Response({"profiles":profiles})
+
+"""    
 def profile_list(request):
     if request.user.is_authenticated:
         profiles = Profile.objects.exclude(user=request.user)
@@ -155,7 +180,7 @@ def profile_list(request):
     else:
         messages.success(request, ("You must be logged in to view this page..."))
         return redirect('home')
-"""    
+   
 def profile(request, pk):
     if request.user.is_authenticated:
         profile = Profile.objects.get(user_id=pk)

@@ -11,12 +11,11 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-            
                 <div class="row g-0">
                   <div class="col-md-4">
-                    {% if yard_user.profile_image %}
+                    {% if user.profile.profile_image %}
                     <img
-                      src="{{ yard_user.profile_image.url }}"
+                      src="{{ user.profile.profile_image.url }}"
                       class="img-fluid rounded-circle"
                       alt=""
                       width="50"
@@ -26,7 +25,7 @@
                     <img
                       src="{% static 'images/default_profile_pic.png' %}"
                       class="img-fluid rounded-circle"
-                      alt="{{yard_user.user.username}}"
+                      alt="{{user.username}}"
                       width="50"
                       height="50"
                       />
@@ -34,7 +33,7 @@
                   </div>
                   <div class="col-md-8">
                     <div class="card-body">
-                      <h5 class="card-title">{{ yard_user.user.username}}</h5>
+                      <h5 class="card-title">{{ yard_user.username}}</h5>
 
                       
                     </div>
@@ -56,6 +55,10 @@
           <button type="submit" class="btn btn-primary">Post your Yard</button>
         </div>
       </form>
+
+
+
+
       <script>
 
 function countChars(e) {
