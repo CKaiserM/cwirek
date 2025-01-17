@@ -63,8 +63,10 @@ class HomeView(APIView):
     def get(self, request):
         yards = Yard.objects.all().order_by("-created_at")
         form = YardForm(request.POST or None)
+        yard_user = Profile.objects.get(user_id=request.user)
         
-        return Response({"yards":yards, "form":form})
+        
+        return Response({"yards":yards, "form":form, 'yard_user': yard_user})
     
     def post(self, request):
         form = YardForm(request.POST or None)

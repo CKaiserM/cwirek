@@ -6,7 +6,7 @@ from django.db.models.signals import post_save
 
 class Yard(models.Model):
     user = models.ForeignKey(User, related_name="yard", on_delete=models.DO_NOTHING)
-    body = models.CharField(max_length=200)
+    body = models.CharField(max_length=250)
     created_at = models.DateTimeField(auto_now_add=True)
     likes = models.ManyToManyField(User, related_name="yard_like", blank=True)
     dislikes = models.ManyToManyField(User, related_name="yard_dislike", blank=True)
