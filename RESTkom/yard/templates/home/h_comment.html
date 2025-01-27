@@ -31,7 +31,7 @@
           </div>
           <div class="col-md-8">
             <div class="card-body">
-              <h5 class="card-title">{{ user.username}}</h5>     
+              <h5 class="card-title">{{ user.username }}</h5>     
             </div>
           </div>
         </div>
@@ -119,7 +119,7 @@
         </div>
       </div>
       <button type="button" class="btn btn-link">
-      <a href="#">
+      <a href="{% url 'edit_comment' yard.id comment.id %}">
         <i class="fa-solid fa-pen-to-square text-dark"></i>
       </a>
     </button>
@@ -138,17 +138,17 @@
         <div class="btn-group" role="group" aria-label="yard bottom actions">
           <!-- reaction button -->
           <button type="button" class="btn btn-link">
-            <a class="text-dark" href="{% url 'yard_like' yard.id %}">
-              {{yard.number_of_likes}}
-              {% if user in yard.likes.all %}
+            <a class="text-dark" href="{% url 'comment_like' comment.id %}">
+              {{ comment.number_of_likes }}
+              {% if user in comment.likes.all %}
                 <i class="fa-solid fa-thumbs-up text-dark"></i>
               {% else %} 
                 <i class="fa-regular fa-thumbs-up text-dark"></i>
               {% endif %}
             </a>
-            <a class="text-dark" href="{% url 'yard_dislike' yard.id %}">
-              {{yard.number_of_dislikes}} 
-              {% if user in yard.dislikes.all %}
+            <a class="text-dark" href="{% url 'comment_dislike' comment.id %}">
+              {{ comment.number_of_dislikes }} 
+              {% if user in comment.dislikes.all %}
                 <i class="fa-solid fa-thumbs-down text-dark"></i>
               {% else %} 
                 <i class="fa-regular fa-thumbs-down text-dark"></i>
@@ -157,7 +157,7 @@
           </button>
           <!-- Comment button -->
           <button type="button" class="btn btn-link" data-bs-toggle="collapse" href="#reply{{comment.id}}" role="button" aria-expanded="false" aria-controls="reply{{comment.id}}">
-            {{ comment.comments.count }} <i class="fa-solid fa-reply text-dark"></i>
+            {{ comment.replies.count }} <i class="fa-solid fa-reply text-dark"></i>
           </button>
       </div>
     </div>

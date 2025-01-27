@@ -29,6 +29,15 @@ class CommentYard(models.Model):
     user = models.ForeignKey(User, related_name="comment_author", on_delete=models.DO_NOTHING)
     body = models.TextField(max_length=250)
     created_at = models.DateTimeField(auto_now_add=True)
+    likes = models.ManyToManyField(User, related_name="comment_like", blank=True)
+    dislikes = models.ManyToManyField(User, related_name="comment_dislike", blank=True)
+
+    # Keep track of likes and dislikes
+
+    def number_of_likes(self):
+        return self.likes.count()
+    def number_of_dislikes(self):
+        return self.dislikes.count()
 
     def __str__(self):
         return (f"{self.user} " f"({self.created_at:%Y-%m-%d %H:%M}): " f"{self.body[:30]}...")
@@ -40,6 +49,14 @@ class ReplyToYardComment(models.Model):
     user = models.ForeignKey(User, related_name="reply_author", on_delete=models.DO_NOTHING, null=True)
     body = models.TextField(max_length=250)
     created_at = models.DateTimeField(auto_now_add=True)
+    likes = models.ManyToManyField(User, related_name="reply_like", blank=True)
+    dislikes = models.ManyToManyField(User, related_name="reply_dislike", blank=True)
+    # Keep track of likes and dislikes
+
+    def number_of_likes(self):
+        return self.likes.count()
+    def number_of_dislikes(self):
+        return self.dislikes.count()
 
     def __str__(self):
         return (f"{self.user} " f"({self.created_at:%Y-%m-%d %H:%M}): " f"{self.body[:30]}...")
