@@ -5,7 +5,7 @@
 {% for yard in yards %}
 
 
-<div class="card mb-3">
+<div class="card mb-3 border-success-subtle">
   <div class="row g-0">
     <div class="col-md-2 p-2">
       {% if yard.user.profile.profile_image %}
@@ -13,17 +13,16 @@
           src="{{ yard.user.profile.profile_image.url }}"
           alt=""
           class="img-fluid rounded-circle mx-auto d-block"
-          style="max-width: 8vw"
+          style="max-width: 8vw; height: 100%"
         />
         {% else %}
         <img
           src="{% static 'img/default_profile_pic.png' %}"
           alt="{{yard.user.username}}"
           class="img-fluid rounded-circle mx-auto d-block"
-          style="max-width: 8vw"
+          style="max-width: 8vw; height: 100%"
         />
         {% endif %}
-        
     </div>
     
     <div class="col-md-8">
@@ -36,7 +35,7 @@
       {% if request.user.username == yard.user.username %}
       <!-- Button trigger modal -->
       <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#deleteModal">
-        <i class="fa-regular fa-trash-can"></i>
+        <i class="fa-regular fa-trash-can text-danger"></i>
       </button>
 
       <!-- Delete Modal -->
@@ -52,14 +51,14 @@
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-primary" action="{% url 'yard_delete' yard.id %}"><a style="color:white; text-decoration:none" href="{% url 'yard_delete' yard.id %}">Confirm</a></button>
+              <button type="button" class="btn btn-primary" action="{% url 'yard_delete' yard.id %}"><a style="color:white" href="{% url 'yard_delete' yard.id %}">Confirm</a></button>
             </div>
           </div>
         </div>
       </div>
       <button type="button" class="btn btn-link">
       <a href="{% url 'yard_edit' yard.id %}">
-        <i class="fa-solid fa-pen-to-square"></i>
+        <i class="fa-solid fa-pen-to-square text-dark"></i>
       </a>
     </button>
 
@@ -68,7 +67,6 @@
   </div>
 
   <div class="row g-0">
-
     <div class="col-md-12">
       <div class="card-body">
         <p class="card-text">{{yard.body}}</p>  
@@ -108,13 +106,9 @@
 
   <!-- comment section modal -->
   <div class="collapse" id="comment{{yard.id}}">
-    <div class="card card-body">
+    <div class="card card-body border border-0">
       {% include 'home/h_comment.html' %}
     </div>    
   </div>
 </div>
-
-
-
-
 {% endfor %}

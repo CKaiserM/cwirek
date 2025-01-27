@@ -1,18 +1,17 @@
 {% load static %} 
 {% if user.profile.profile_image %}
+<div class="img-container position-absolute top-50 start-0 translate-middle">
     <img
         src="{{ user.profile.profile_image.url }}"
-        class="img-fluid rounded-circle float-start position-absolute top-50 start-0 translate-middle"
+        class="img-fluid rounded-circle float-start"
         alt=""
-        width=50
-        height=50
     />
+</div>
 {% else %}
     <img
         src="{% static 'images/default_profile_pic.png' %}"
-        class="img-fluid rounded-circle float-start position-absolute top-50 start-0 translate-middle"
+        class="img-fluid rounded-circle float-start "
         alt="{{user.username}}"
-        width=50
-        height=50
     />
+</div>
 {% endif%}

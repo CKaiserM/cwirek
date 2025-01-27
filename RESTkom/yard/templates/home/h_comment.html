@@ -1,79 +1,62 @@
 {% load static %} 
 
-<!-- Button trigger modal -->
-<div class="d-grid gap-2">
-<button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#postComment{{yard.id}}"> 
+<!-- Button trigger add comment modal -->
+<div class="d-grid gap-1">
+<button type="button" class="btn btn-outline-primary btn-lg" data-bs-toggle="modal" data-bs-target="#postComment{{yard.id}}"> 
     Add Comment 
   </button>
 </div>
-
-  <!-- Modal -->
-  <div class="modal fade" id="postComment{{yard.id}}" tabindex="-1" aria-labelledby="postCommentLabel{{yard.id}}" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-                <div class="row g-0">
-                  <div class="col-md-4">
-                    {% if user.profile.profile_image %}
-                    <img
-                      src="{{ yard_user.profile.profile_image.url }}"
-                      class="img-fluid rounded-circle"
-                      alt=""
-                      width="50"
-                      height="50"
-                    />
-                    {% else %}
-                    <img
-                      src="{% static 'images/default_profile_pic.png' %}"
-                      class="img-fluid rounded-circle"
-                      alt="{{user.username}}"
-                      width="50"
-                      height="50"
-                      />
-                    {% endif%}
-                  </div>
-                  <div class="col-md-8">
-                    <div class="card-body">
-                      <h5 class="card-title">{{ yard_user.username}}</h5>
-
-                      
-                    </div>
-                  </div>
-                </div>
+<!-- Add comment modal -->
+<div class="modal fade" id="postComment{{yard.id}}" tabindex="-1" aria-labelledby="postCommentLabel{{yard.id}}" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div class="row g-0">
+          <div class="col-md-2">
+            {% if user.profile.profile_image %}
+              <img
+              src="{{ user.profile.profile_image.url }}"
+              alt="{{user.username}}"
+              class="img-fluid rounded-circle mx-auto d-block"
+              style="max-width: 8vw; height: 100%"
+              />
+            {% else %}
+              <img
+                src="{% static 'images/default_profile_pic.png' %}"
+                alt="{{user.username}}"
+                class="img-fluid rounded-circle mx-auto d-block"
+                style="max-width: 8vw; height: 100%"
+              />
+            {% endif %}
+          </div>
+          <div class="col-md-8">
+            <div class="card-body">
+              <h5 class="card-title">{{ user.username}}</h5>     
+            </div>
+          </div>
+        </div>
             
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>            
-        {% if commentform %}
-        <form method="POST" action="{% url 'comment' yard.id %}">
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>            
+      {% if commentform %}
+      <form method="POST" action="{% url 'comment' yard.id %}">
         <div class="modal-body">
                 {% csrf_token %} 
                 {{ commentform.as_p }}
                 <p class="text-end"id="remaining-chars"></p>
         </div>
         <div class="modal-footer">
-
-            
           <button type="submit" class="btn btn-primary">Post your comment</button>
         </div>
       </form>
-
-
-
-
       <script>
+      function countChars(e) {
+          document.querySelector("#remaining-chars").innerHTML = e.target.maxLength - e.target.value.length + " characters left"
+          }
 
-function countChars(e) {
-
-  document.querySelector("#remaining-chars").innerHTML = e.target.maxLength - e.target.value.length + " characters left"
-}
-
-
-// use addEventListener rather that inline event handler
-// event object is automatically passed to event handler
-document.querySelector("#postYard").addEventListener(
-  "input",
-  countChars
-)
+          // use addEventListener rather that inline event handler
+          // event object is automatically passed to event handler
+          document.querySelector("#postYard").addEventListener("input", countChars)
       </script>
       {% endif %}
       </div>
@@ -82,39 +65,110 @@ document.querySelector("#postYard").addEventListener(
 
 {%for comment in yard.comments.all %}
 
-     <div class="alert alert-dark" role="alert">
-        <div class="container">
-          <div class="row">
-            
-            <div class="col-1">
-                {% if comment.user.profile.profile_image %}
-                <img
-                  src="{{ comment.user.profile.profile_image.url }}"
-                  alt=""
-                  class="rounded-circle"
-                  width="50"
-                  height="50"
-                />
-                {% else %}
-                <img
-                  src="{% static 'images/default_profile_pic.png' %}"
-                  alt="{{comment.user.username}}"
-                  class="rounded-circle"
-                  width="50"
-                  height="50"
-                />
-                {% endif %}
+<!-- -->
+
+<div class="card mb-3 border border-0">
+  <div class="row g-0">
+    <div class="col-md-2 p-2">
+      {% if comment.user.profile.profile_image %}
+        <img
+          src="{{ comment.user.profile.profile_image.url }}"
+          alt=""
+          class="img-fluid rounded-circle mx-auto d-block"
+          style="max-width: 5vw; height: 100%"
+        />
+        {% else %}
+        <img
+          src="{% static 'images/default_profile_pic.png' %}"
+          alt="{{comment.user.username}}"
+          class="img-fluid rounded-circle mx-auto d-block"
+          style="max-width: 5vw; height: 100%"
+        />
+        {% endif %}
+    </div>
+    
+    <div class="col-md-8">
+      <div class="card-body">
+        <h5 class="card-title fs-6">{{ comment.user.username}}</h5>
+        <p class="card-text fs-6"><small class="text-body-secondary">Replied {{ comment.created_at }}</small></p>  
+      </div>
+    </div>
+    <div class="col-md-2 btn-group" role="group">
+      {% if request.user.username == comment.user.username %}
+      <!-- Button trigger modal -->
+      <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#deleteModal">
+        <i class="fa-regular fa-trash-can text-danger"></i>
+      </button>
+
+      <!-- Delete Modal -->
+      <div class="modal fade" id="deleteModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="deleteModalLabel">Delete yard?</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="col-10">
-                {{ comment.body }}<br />
-                <small class="text-muted">
-                  {{ comment.created_at }} By @{{ comment.user.username|lower}} 
-  
-                  
-                </small>
+            <div class="modal-body">
+              Please confirm
             </div>
-            <br /><br />
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary" action="#"><a style="color:white" href="#">Confirm</a></button>
+            </div>
           </div>
         </div>
       </div>
+      <button type="button" class="btn btn-link">
+      <a href="#">
+        <i class="fa-solid fa-pen-to-square text-dark"></i>
+      </a>
+    </button>
+
+    {% endif %}
+    </div>
+  </div>
+
+  <div class="row g-0">
+
+    <div class="col-md-12">
+      <div class="card-body">
+        <small>
+        <p class="card-text">{{comment.body}}</p>
+        </small>  
+        <div class="btn-group" role="group" aria-label="yard bottom actions">
+          <!-- reaction button -->
+          <button type="button" class="btn btn-link">
+            <a class="text-dark" href="{% url 'yard_like' yard.id %}">
+              {{yard.number_of_likes}}
+              {% if user in yard.likes.all %}
+                <i class="fa-solid fa-thumbs-up text-dark"></i>
+              {% else %} 
+                <i class="fa-regular fa-thumbs-up text-dark"></i>
+              {% endif %}
+            </a>
+            <a class="text-dark" href="{% url 'yard_dislike' yard.id %}">
+              {{yard.number_of_dislikes}} 
+              {% if user in yard.dislikes.all %}
+                <i class="fa-solid fa-thumbs-down text-dark"></i>
+              {% else %} 
+                <i class="fa-regular fa-thumbs-down text-dark"></i>
+            {% endif %}
+            </a>
+          </button>
+          <!-- Comment button -->
+          <button type="button" class="btn btn-link" data-bs-toggle="collapse" href="#reply{{comment.id}}" role="button" aria-expanded="false" aria-controls="reply{{comment.id}}">
+            {{ comment.comments.count }} <i class="fa-solid fa-reply text-dark"></i>
+          </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- comment section modal -->
+  <div class="collapse" id="reply{{comment.id}}">
+    <div class="card card-body">
+      {% include 'home/h_reply.html' %}
+    </div>    
+  </div>
+</div>
 {% endfor %}
