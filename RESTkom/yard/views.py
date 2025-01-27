@@ -32,7 +32,7 @@ class GroupViewSet(viewsets.ModelViewSet):
     queryset = Group.objects.all().order_by('name')
     serializer_class = GroupSerializer
     permission_classes = [permissions.IsAuthenticated]
-"""
+
 def home(request):
     
     if request.user.is_authenticated:
@@ -52,7 +52,7 @@ def home(request):
     else:
         yards = Yard.objects.all().order_by("-created_at") 
         return render(request, 'home.html', {"yards":yards})
-"""
+
     YardView()
     return render(request, 'home.html', {})
 """
@@ -63,9 +63,10 @@ class HomeView(APIView):
     def get(self, request):
         yards = Yard.objects.all().order_by("-created_at")
         form = YardForm(request.POST or None)
+        commentform = CommentYardForm(request.POST or None)
         yard_user = request.user
         
-        return Response({"yards":yards, "form":form, 'yard_user': yard_user})
+        return Response({"yards":yards, "form":form, 'yard_user': yard_user, 'commentform':commentform})
     
     def post(self, request):
         form = YardForm(request.POST or None)
@@ -106,8 +107,8 @@ class YardView(APIView):
     template_name = 'yard/yard.html'
 
     def get(self, request):
-        queryset = Yard.objects.all()
-        return Response({'yards':queryset})
+        yards = Yard.objects.all()
+        return Response({'yards':yards})
 
 class ProfileViewSet(ListCreateAPIView):
     queryset = Profile.objects.all()
@@ -163,7 +164,24 @@ class PostCommentView(APIView):
     model = CommentYard
     template_name = 'yard/comment.html'
     fields = '__all__'
-    
+
+    def get(self, request, pk):
+        commentform = CommentYardForm(request.POST or None)
+        commentYard = CommentYard.objects.all()
+        return Response({'commentYard': commentYard, "commentform":commentform})
+
+    def post(self, request, pk):
+        commentform = CommentYardForm(request.POST or None)
+        if request.method == "POST":
+            """"""
+            if commentform.is_valid():
+                comment = commentform.save(commit=False)
+                comment.yard.id = pk
+                comment.user = request.user
+                comment.save()
+                messages.success(request, ("It is done!"))
+                return redirect('home')
+   
 class PostReplyView(APIView):
     renderer_classes = [TemplateHTMLRenderer]
     template_name = 'yard/reply.html'
@@ -228,7 +246,7 @@ def followers(request, pk):
     if request.user.is_authenticated:
         if request.user.id == pk:
             profiles = Profile.objects.get(user_id=pk)
-            return render(request, 'followers.html', {"profiles":profiles})
+            return render(request, 'profile/followers.html', {"profiles":profiles})
         else:
             messages.success(request, ("That is not your profile page"))
             return redirect('home')

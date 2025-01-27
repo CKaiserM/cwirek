@@ -1,0 +1,120 @@
+{% load rest_framework %}
+
+{% load static %} 
+
+{% for yard in yards %}
+
+
+<div class="card mb-3">
+  <div class="row g-0">
+    <div class="col-md-2 p-2">
+      {% if yard.user.profile.profile_image %}
+        <img
+          src="{{ yard.user.profile.profile_image.url }}"
+          alt=""
+          class="img-fluid rounded-circle mx-auto d-block"
+          style="max-width: 8vw"
+        />
+        {% else %}
+        <img
+          src="{% static 'img/default_profile_pic.png' %}"
+          alt="{{yard.user.username}}"
+          class="img-fluid rounded-circle mx-auto d-block"
+          style="max-width: 8vw"
+        />
+        {% endif %}
+        
+    </div>
+    
+    <div class="col-md-8">
+      <div class="card-body">
+        <h5 class="card-title">{{ yard.user.username|lower}}</h5>
+        <p class="card-text"><small class="text-body-secondary">Posted {{ yard.created_at }}</small></p>  
+      </div>
+    </div>
+    <div class="col-md-2 btn-group" role="group">
+      {% if request.user.username == yard.user.username %}
+      <!-- Button trigger modal -->
+      <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#deleteModal">
+        <i class="fa-regular fa-trash-can"></i>
+      </button>
+
+      <!-- Delete Modal -->
+      <div class="modal fade" id="deleteModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="deleteModalLabel">Delete yard?</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              Please confirm
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary" action="{% url 'yard_delete' yard.id %}"><a style="color:white; text-decoration:none" href="{% url 'yard_delete' yard.id %}">Confirm</a></button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button type="button" class="btn btn-link">
+      <a href="{% url 'yard_edit' yard.id %}">
+        <i class="fa-solid fa-pen-to-square"></i>
+      </a>
+    </button>
+
+    {% endif %}
+    </div>
+  </div>
+
+  <div class="row g-0">
+
+    <div class="col-md-12">
+      <div class="card-body">
+        <p class="card-text">{{yard.body}}</p>  
+        <div class="btn-group" role="group" aria-label="yard bottom actions">
+          <!-- reaction button -->
+          <button type="button" class="btn btn-link">
+            <a href="{% url 'yard_like' yard.id %}">
+              {{yard.number_of_likes}}
+              {% if user in yard.likes.all %}
+                <i class="fa-solid fa-thumbs-up"></i>
+              {% else %} 
+                <i class="fa-regular fa-thumbs-up"></i>
+              {% endif %}
+            </a>
+            <a href="{% url 'yard_dislike' yard.id %}">
+              {{yard.number_of_dislikes}} 
+              {% if user in yard.dislikes.all %}
+            
+                <i class="fa-solid fa-thumbs-down"></i>
+              {% else %} 
+                <i class="fa-regular fa-thumbs-down"></i>
+            {% endif %}
+            </a>
+          </button>
+          <!-- Comment button -->
+          <button type="button" class="btn btn-link" data-bs-toggle="collapse" href="#comment{{yard.id}}" role="button" aria-expanded="false" aria-controls="comment{{yard.id}}">
+            {{ yard.comments.count }} <i class="fa-regular fa-comment"></i>
+          </button>
+          <!-- Share button -->
+          <button type="button" class="btn btn-link">
+            <i class="fa-solid fa-share-nodes"></i>
+          </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- comment section modal -->
+  <div class="collapse" id="comment{{yard.id}}">
+    <div class="card card-body">
+      {% include 'home/h_comment.html' %}
+    </div>    
+  </div>
+</div>
+
+
+
+
+{% endfor %}

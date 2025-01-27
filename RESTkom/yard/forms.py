@@ -18,17 +18,17 @@ class ProfileMiscForm(forms.ModelForm):
 
 
 class YardForm(forms.ModelForm):
-    body = forms.CharField(required=True, widget=forms.widgets.Textarea(attrs={"placeholder": "Enter your message.", "class":"form-control", "id":"postYard",}), label="", max_length=250)
+    body = forms.CharField(required=True, widget=forms.widgets.Textarea(attrs={"placeholder": "Enter your message.", "class":"form-control", "id":"postYard",}), label="", max_length=250, )
     class Meta:
         model = Yard
         exclude = ("user", "likes", "dislikes",)
 
 class CommentYardForm(forms.ModelForm):
-    body = forms.CharField(required=True, widget=forms.widgets.Textarea(attrs={"placeholder": "Comment it!", "class":"form-control",}), label="", )
+    body = forms.CharField(required=True, widget=forms.widgets.Textarea(attrs={"placeholder": "Add your comment...", "class":"form-control",}), label="", max_length=250, )
     class Meta:
         model = CommentYard
         field = ['body']
-        exclude = ("user", "likes", "dislikes",)
+        exclude = ("user", "likes", "dislikes", "yard")
 
 class SignUpForm(UserCreationForm):
     email = forms.EmailField(label="", widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Email Address'}))

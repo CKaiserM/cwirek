@@ -1,4 +1,7 @@
-{% load static %} 
+{% extends 'base.html' %} 
+
+{% load rest_framework %}
+{% block content %}
 <!-- Button trigger modal -->
 <div class="d-grid gap-2">
 <button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#postYard">
@@ -47,7 +50,7 @@
         <div class="modal-body">
 
                 {% csrf_token %} {{ form.as_p }}
-                <p class="text-end"id="remaining-chars"></p>
+                <p class="text-end" id="remaining-chars"></p>
         </div>
         <div class="modal-footer">
 
@@ -78,6 +81,7 @@ document.querySelector("#postYard").addEventListener(
       </div>
     </div>
   </div>
+{%endblock%}
   
 
 

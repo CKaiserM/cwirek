@@ -26,16 +26,24 @@ class Yard(models.Model):
 
 class CommentYard(models.Model):
     yard = models.ForeignKey(Yard, related_name="comments", on_delete=models.CASCADE)
-    user = models.ForeignKey(User, related_name="comments", on_delete=models.DO_NOTHING, null=True)
+    user = models.ForeignKey(User, related_name="comment_author", on_delete=models.DO_NOTHING)
     body = models.TextField(max_length=250)
     created_at = models.DateTimeField(auto_now_add=True)
-    #comment = models.ManyToManyField(User, related_name="yard_comment", blank=True)
-    
-    def number_of_comments(self):
-        return self.comments.count()
 
     def __str__(self):
         return (f"{self.user} " f"({self.created_at:%Y-%m-%d %H:%M}): " f"{self.body[:30]}...")
+
+# Reply to comment model   
+
+class ReplyToCommentYard(models.Model):
+    comment = models.ForeignKey(CommentYard, related_name="reply", on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name="reply", on_delete=models.DO_NOTHING, null=True)
+    body = models.TextField(max_length=250)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return (f"{self.user} " f"({self.created_at:%Y-%m-%d %H:%M}): " f"{self.body[:30]}...")
+    
 
 # Create a User Profile Model
 
