@@ -13,8 +13,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .serializers import UserSerializer, YardSerializer, ProfileSerializer
-from .models import Yard, Profile, User, CommentYard
-from .forms import YardForm, SignUpForm, UpdateUserForm, ProfileMiscForm, CommentYardForm
+from .models import Yard, Profile, User, CommentYard, ReplyToYardComment
+from .forms import YardForm, SignUpForm, UpdateUserForm, ProfileMiscForm, CommentYardForm, ReplyToCommentForm
 
 class UserViewSet(viewsets.ModelViewSet):
     """
@@ -32,9 +32,10 @@ class HomeView(APIView):
         yards = Yard.objects.all().order_by("-created_at")
         form = YardForm(request.POST or None)
         commentform = CommentYardForm(request.POST or None)
+        replyToCommentForm = ReplyToCommentForm(request.POST or None)
         yard_user = request.user
         
-        return Response({"yards":yards, "form":form, 'yard_user': yard_user, 'commentform':commentform})
+        return Response({"yards":yards, "form":form, 'yard_user': yard_user, 'commentform':commentform, "replyToCommentForm":replyToCommentForm})
     
     def post(self, request):
         form = YardForm(request.POST or None)
@@ -271,6 +272,8 @@ class ProfileListView(APIView):
             messages.success(request, ("You must be logged in to view this page..."))
             return redirect('home')           
 
+# Comment class
+
 class PostCommentView(APIView):
     renderer_classes = [TemplateHTMLRenderer]
     model = CommentYard
@@ -293,14 +296,31 @@ class PostCommentView(APIView):
                 comment.save()
                 messages.success(request, ("It is done!"))
                 return redirect('home')
-   
+
+# Reply to comment class
+
 class PostReplyView(APIView):
     renderer_classes = [TemplateHTMLRenderer]
+    model = ReplyToYardComment
     template_name = 'yard/reply.html'
+    fields = '__all__'
 
-    def get(self, request):
-        profiles = Profile.objects.exclude(user=request.user)
-        return Response({"profiles":profiles})
+    def get(self, request, pk):
+        replyToCommentForm = ReplyToCommentForm(request.POST or None)
+        replyToComment = ReplyToYardComment.objects.all()
+        return Response({'replyToComment': replyToComment, "replyToCommentForm":replyToCommentForm})
+
+    def post(self, request, pk):
+        replyToCommentForm = ReplyToCommentForm(request.POST or None)
+        comment = get_object_or_404(CommentYard, pk=pk)
+        if request.method == "POST":
+            if replyToCommentForm.is_valid():
+                reply = replyToCommentForm.save(commit=False)
+                reply.comment = comment
+                reply.user = request.user
+                reply.save()
+                messages.success(request, ("Reply added"))
+                return redirect('home')
 
 # Follow class
 

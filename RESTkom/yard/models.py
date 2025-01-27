@@ -35,9 +35,9 @@ class CommentYard(models.Model):
 
 # Reply to comment model   
 
-class ReplyToCommentYard(models.Model):
-    comment = models.ForeignKey(CommentYard, related_name="reply", on_delete=models.CASCADE)
-    user = models.ForeignKey(User, related_name="reply", on_delete=models.DO_NOTHING, null=True)
+class ReplyToYardComment(models.Model):
+    comment = models.ForeignKey(CommentYard, related_name="replies", on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name="reply_author", on_delete=models.DO_NOTHING, null=True)
     body = models.TextField(max_length=250)
     created_at = models.DateTimeField(auto_now_add=True)
 

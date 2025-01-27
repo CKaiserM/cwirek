@@ -1,5 +1,5 @@
 from django import forms
-from .models import Yard, Profile, CommentYard
+from .models import Yard, Profile, CommentYard, ReplyToYardComment
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.contrib.auth.models import User
 
@@ -29,6 +29,13 @@ class CommentYardForm(forms.ModelForm):
         model = CommentYard
         field = ['body']
         exclude = ("user", "likes", "dislikes", "yard")
+
+class ReplyToCommentForm(forms.ModelForm):
+    body = forms.CharField(required=True, widget=forms.widgets.Textarea(attrs={"placeholder": "Reply to comment", "class":"form-control",}), label="", max_length=250, )
+    class Meta:
+        model = ReplyToYardComment
+        field = ['body']
+        exclude = ("user", "likes", "dislikes", "yard", "comment")
 
 class SignUpForm(UserCreationForm):
     email = forms.EmailField(label="", widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Email Address'}))
