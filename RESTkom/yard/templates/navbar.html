@@ -10,12 +10,15 @@
       <div class="collapse navbar-collapse" id="navbarScroll">
         <ul class="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll" style="--bs-scroll-height: 100px;">
           <li class="nav-item">
-            <a class="nav-link active" aria-current="page" href="#">Home</a>
+            <a class="nav-link active" aria-current="page" href="{% url 'home' %}">Home</a>
           </li>
           {% if user.is_authenticated %}
         <li class="nav-item">
           <a class="nav-link" href="{% url 'profile' request.user.id %}"
             >My Profile</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'profile_list' %}">Profile list</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="{% url 'logout' %}">Logout</a>
@@ -32,10 +35,13 @@
             <a class="nav-link disabled" aria-disabled="true">Link</a>
           </li>
         </ul>
-        <form class="d-flex" role="search">
-          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+
+        <form class="d-flex" action="{% url 'search_all' %}" method="POST">
+          {% csrf_token %}
+          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="search">
           <button class="btn btn-outline-success" type="submit">Search</button>
         </form>
+
         <button type="button" class="btn btn-primary position-relative">
           Inbox
           <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">

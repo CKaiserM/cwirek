@@ -114,13 +114,13 @@
             </div>
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-              <button type="button" class="btn btn-primary" action="#"><a style="color:white" href="#">Confirm</a></button>
+              <button type="button" class="btn btn-primary" action="{% url 'reply_delete' reply.id %}"><a style="color:white" href="{% url 'reply_delete' reply.id %}">Confirm</a></button>
             </div>
           </div>
         </div>
       </div>
       <button type="button" class="btn btn-link">
-      <a href="#">
+        <a href="{% url 'edit_reply' comment.id reply.id %}">
         <i class="fa-solid fa-pen-to-square text-dark"></i>
       </a>
     </button>

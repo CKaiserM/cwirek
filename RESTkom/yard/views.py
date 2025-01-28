@@ -448,6 +448,7 @@ class PostReplyView(APIView):
             return redirect('home')
 
         #if request.user.is_authenticated:
+    
     def reply_delete(request, pk):
         if request.user.is_authenticated:  
             reply = get_object_or_404(ReplyToYardComment, id=pk)
@@ -463,30 +464,30 @@ class PostReplyView(APIView):
             messages.success(request, ("Please log in."))
             return redirect('login')
 
-    def reply_edit(request, pk):
+    def reply_edit(request, pk, pc):
         if request.user.is_authenticated:
-            reply = get_object_or_404(ReplyToCommentForm, id=pk)
+            reply = get_object_or_404(ReplyToYardComment, id=pc)
             if request.user.username == reply.user.username:  
                 
-                form = YardForm(request.POST or None, instance=reply)
-
-                #edit post
+                replyForm = ReplyToCommentForm(request.POST or None, instance=reply)
+                comment = get_object_or_404(CommentYard, pk=pk)
+                #edit comment
                 if request.method == "POST":
-                    if form.is_valid():
-                        replies = form.save(commit=False)
+                    if replyForm.is_valid():
+                        replies = replyForm.save(commit=False)
                         replies.user = request.user
+                        replies.yard = comment
                         replies.save()
                         messages.success(request, ("It is done!"))
                         return redirect('home')
                 else:
-                    return render(request, "yard/edit_yard.html", {'form':form, 'reply':reply})
+                    return render(request, "yard/edit_reply.html", {'replyForm':replyForm, 'reply':reply})
             else:
-                messages.success(request, ("not your yard"))
+                messages.success(request, ("not your comment"))
                 return redirect('home')
         else:
             messages.success(request, ("Please log in."))
             return redirect('login')
-
 # Follow class
 
 class FollowView(APIView):
@@ -537,41 +538,42 @@ class FollowView(APIView):
 
 
 
-    
+class SearchView(APIView):   
 
-     
+    def yard_search(request):
+        if request.method == "POST":
+            #grab search phrase
+            search = request.POST['search']
+            #search the DB
+            searched = Yard.objects.filter(body__contains=search)
+            return render(request, "search/search_yard.html", {'search':search, 'searched':searched})
+        else:
+            return render(request, "search/search_yard.html", {})
 
-
-def yard_search(request):
-    if request.method == "POST":
-        #grab search phrase
-        search = request.POST['search']
-        #search the DB
-        searched = Yard.objects.filter(body__contains=search)
-        return render(request, "search/search_yard.html", {'search':search, 'searched':searched})
-    else:
-        return render(request, "search/search_yard.html", {})
-
-def user_search(request):
-    if request.method == "POST":
-        #grab search phrase
-        search = request.POST['search']
-        #search the DB
-        searched = User.objects.filter(username__contains=search)
-        return render(request, "search/search_users.html", {'search':search, 'searched':searched})
-    else:
-        messages.success(request, ("Sorry, nothing found"))
-        return render(request, "search/search_users.html", {})
-    
-def search(request):
-    if request.method == "POST":
-        #grab search phrase
-        search = request.POST['search']
-        #search the DB
-        found_user = User.objects.filter(username__contains=search)
-        found_yard = Yard.objects.filter(body__contains=search)
-        return render(request, "search/search.html", {'search':search, 'found_user':found_user, 'found_yard':found_yard})
-    else:
-        messages.success(request, ("Sorry, nothing found"))
-        return render(request, "search/search.html", {})
+    def user_search(request):
+        if request.method == "POST":
+            #grab search phrase
+            search = request.POST['search']
+            #search the DB
+            searched = User.objects.filter(username__contains=search)
+            return render(request, "search/search_users.html", {'search':search, 'searched':searched})
+        else:
+            messages.success(request, ("Sorry, nothing found"))
+            return render(request, "search/search_users.html", {})
+        
+    def search(request):
+        print(request.method)
+        print(request.POST['search'])
+        if request.method == "POST":
+            #grab search phrase
+            search = request.POST['search']
+            #search the DB
+            found_user = User.objects.filter(username__contains=search)
+            found_yard = Yard.objects.filter(body__contains=search)
+            found_comment = CommentYard.objects.filter(body__contains=search)
+            found_reply = ReplyToYardComment.objects.filter(body__contains=search)
+            return render(request, "search/search.html", {'search':search, 'found_user':found_user, 'found_yard':found_yard, 'found_comment':found_comment, 'found_reply':found_reply})
+        else:
+            messages.success(request, ("Sorry, nothing found"))
+            return render(request, "search/search.html", {})
 

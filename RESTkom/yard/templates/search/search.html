@@ -15,7 +15,9 @@
 <br />
 {% if search %} Results for {{search}}:
 <br /><br /><br />
-{% endif %} {% if found_yard %} {% for yard in found_yard %}
+{% endif %} 
+{% if found_yard %} 
+{% for yard in found_yard %}
 <div class="alert alert-dark" role="alert">
   <div class="container">
     <div class="row">
