@@ -136,19 +136,19 @@
         <small>
         <p class="card-text">{{reply.body}}</p>
         </small>  
-        <div class="btn-group" role="group" aria-label="yard bottom actions">
+        <div class="btn-group" role="group" aria-label="reply bottom actions">
           <!-- reaction button -->
           <button type="button" class="btn btn-link">
-            <a class="text-dark" href="{% url 'yard_like' yard.id %}">
-              {{yard.number_of_likes}}
-              {% if user in yard.likes.all %}
+            <a class="text-dark" href="{% url 'reply_like' reply.id %}">
+              {{reply.number_of_likes}}
+              {% if user in reply.likes.all %}
                 <i class="fa-solid fa-thumbs-up text-dark"></i>
               {% else %} 
                 <i class="fa-regular fa-thumbs-up text-dark"></i>
               {% endif %}
             </a>
-            <a class="text-dark" href="{% url 'yard_dislike' yard.id %}">
-              {{yard.number_of_dislikes}} 
+            <a class="text-dark" href="{% url 'reply_dislike' reply.id %}">
+              {{reply.number_of_dislikes}} 
               {% if user in yard.dislikes.all %}
                 <i class="fa-solid fa-thumbs-down text-dark"></i>
               {% else %} 

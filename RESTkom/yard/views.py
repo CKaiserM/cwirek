@@ -349,7 +349,7 @@ class PostCommentView(APIView):
                 comment.delete()
                 return redirect(request.META.get("HTTP_REFERER"))
             else:
-                messages.success(request, ("not your yard"))
+                messages.success(request, ("not your comment"))
                 return redirect(request.META.get("HTTP_REFERER"))
         else:
             messages.success(request, ("Please log in."))
@@ -405,56 +405,56 @@ class PostReplyView(APIView):
                 messages.success(request, ("Reply added"))
                 return redirect('home')
 
-    def yard_like(request, pk):
+    def reply_like(request, pk):
         if request.user.is_authenticated:  
-            yard = get_object_or_404(Yard, id=pk)
+            reply = get_object_or_404(ReplyToYardComment, id=pk)
             
             # if dislike exists, remove
-            if yard.dislikes.filter(id=request.user.id):
-                yard.dislikes.remove(request.user)
+            if reply.dislikes.filter(id=request.user.id):
+                reply.dislikes.remove(request.user)
 
-            if yard.likes.filter(id=request.user.id):
-                yard.likes.remove(request.user)
+            if reply.likes.filter(id=request.user.id):
+                reply.likes.remove(request.user)
             else:
-                yard.likes.add(request.user)  
+                reply.likes.add(request.user)  
         else:
             return redirect('home')    
         return redirect(request.META.get("HTTP_REFERER"))
 
-    def yard_dislike(request, pk):
+    def reply_dislike(request, pk):
         if request.user.is_authenticated:  
-            yard = get_object_or_404(Yard, id=pk)
+            reply = get_object_or_404(ReplyToYardComment, id=pk)
 
             # if like exists, remove
-            if yard.likes.filter(id=request.user.id):
-                yard.likes.remove(request.user)  
+            if reply.likes.filter(id=request.user.id):
+                reply.likes.remove(request.user)  
                 
-            if yard.dislikes.filter(id=request.user.id):
-                yard.dislikes.remove(request.user)
+            if reply.dislikes.filter(id=request.user.id):
+                reply.dislikes.remove(request.user)
             else:
-                yard.dislikes.add(request.user)
+                reply.dislikes.add(request.user)
 
         else:
             return redirect('home')    
         return redirect(request.META.get("HTTP_REFERER"))
 
-    def yard_show(request, pk):
-        yard = get_object_or_404(Yard, id=pk)
+    def reply_show(request, pk):
+        reply = get_object_or_404(ReplyToYardComment, id=pk)
         
-        if yard:
-            return render(request, "yard/show_yard.html", {'yard':yard})
+        if reply:
+            return render(request, "yard/show_yard.html", {'reply':reply})
         else:
             messages.success(request, ("This post does not exist"))
             return redirect('home')
 
         #if request.user.is_authenticated:
-    def yard_delete(request, pk):
+    def reply_delete(request, pk):
         if request.user.is_authenticated:  
-            yard = get_object_or_404(Yard, id=pk)
+            reply = get_object_or_404(ReplyToYardComment, id=pk)
             #check ownership
-            if request.user.username == yard.user.username:
+            if request.user.username == reply.user.username:
                 #delete
-                yard.delete()
+                reply.delete()
                 return redirect(request.META.get("HTTP_REFERER"))
             else:
                 messages.success(request, ("not your yard"))
@@ -463,23 +463,23 @@ class PostReplyView(APIView):
             messages.success(request, ("Please log in."))
             return redirect('login')
 
-    def yard_edit(request, pk):
+    def reply_edit(request, pk):
         if request.user.is_authenticated:
-            yard = get_object_or_404(Yard, id=pk)
-            if request.user.username == yard.user.username:  
+            reply = get_object_or_404(ReplyToCommentForm, id=pk)
+            if request.user.username == reply.user.username:  
                 
-                form = YardForm(request.POST or None, instance=yard)
+                form = YardForm(request.POST or None, instance=reply)
 
                 #edit post
                 if request.method == "POST":
                     if form.is_valid():
-                        yards = form.save(commit=False)
-                        yards.user = request.user
-                        yards.save()
+                        replies = form.save(commit=False)
+                        replies.user = request.user
+                        replies.save()
                         messages.success(request, ("It is done!"))
                         return redirect('home')
                 else:
-                    return render(request, "yard/edit_yard.html", {'form':form, 'yard':yard})
+                    return render(request, "yard/edit_yard.html", {'form':form, 'reply':reply})
             else:
                 messages.success(request, ("not your yard"))
                 return redirect('home')

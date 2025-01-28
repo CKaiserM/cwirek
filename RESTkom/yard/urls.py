@@ -28,5 +28,7 @@ urlpatterns = [
     path('yard/<int:pk>/edit_comment/<int:pc>', views.PostCommentView.comment_edit, name="edit_comment"),
     path('comment_likes/<int:pk>', views.PostCommentView.comment_like, name="comment_like"),
     path('comment_dislikes/<int:pk>', views.PostCommentView.comment_dislike, name="comment_dislike"),
+    path('reply_likes/<int:pk>', views.PostReplyView.reply_like, name="reply_like"),
+    path('reply_dislikes/<int:pk>', views.PostReplyView.reply_dislike, name="reply_dislike"),
     path('yard/<int:pk>/reply', views.PostReplyView.as_view(), name="reply"),
 ]
