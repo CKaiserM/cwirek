@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.models import Group, User
-from .models import Profile, Yard, CommentYard, ReplyToYardComment
+from .models import Profile, Yard, CommentYard, ReplyToYardComment, Notifications
 #unregister groups
 admin.site.unregister(Group)
 
@@ -32,3 +32,4 @@ admin.site.register(CommentYard)
 
 # Register Reply to yard comments
 admin.site.register(ReplyToYardComment)
+admin.site.register(Notifications)

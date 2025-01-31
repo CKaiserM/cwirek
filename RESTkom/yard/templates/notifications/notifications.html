@@ -1,0 +1,12 @@
+{% extends 'base.html' %} 
+
+{% load rest_framework %}
+{% block content %}
+{% for notification in notifications %}
+    {% if not notification.read %}
+        <div class="notification">
+            <a href="{{ notification.link }}">{{ notification.message }}</a>
+        </div>
+    {% endif %}
+{% endfor %}
+{% endblock %}

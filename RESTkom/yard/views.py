@@ -13,7 +13,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .serializers import UserSerializer, YardSerializer, ProfileSerializer
-from .models import Yard, Profile, User, CommentYard, ReplyToYardComment
+from .models import Yard, Profile, User, CommentYard, ReplyToYardComment, Notifications
 from .forms import YardForm, SignUpForm, UpdateUserForm, ProfileMiscForm, CommentYardForm, ReplyToCommentForm
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -34,8 +34,8 @@ class HomeView(APIView):
         commentform = CommentYardForm(request.POST or None)
         replyToCommentForm = ReplyToCommentForm(request.POST or None)
         yard_user = request.user
-        
-        return Response({"yards":yards, "form":form, 'yard_user': yard_user, 'commentform':commentform, "replyToCommentForm":replyToCommentForm})
+        unread_notifications = Notifications.objects.filter(user=request.user, read=False).count()
+        return Response({"yards":yards, "form":form, 'yard_user': yard_user, 'commentform':commentform, "replyToCommentForm":replyToCommentForm, 'unread_notifications': unread_notifications})
     
     def post(self, request):
         form = YardForm(request.POST or None)
@@ -534,9 +534,7 @@ class FollowView(APIView):
                 return redirect('home')
         else:
             messages.success(request, ("You must be logged in to view this page..."))
-            return redirect('home')
-
-
+            return redirect('home')    
 
 class SearchView(APIView):   
 
@@ -577,3 +575,11 @@ class SearchView(APIView):
             messages.success(request, ("Sorry, nothing found"))
             return render(request, "search/search.html", {})
 
+
+def notifications(request):
+    if request.user.is_authenticated:
+        notifications = Notifications.objects.filter(user=request.user).order_by('-id')
+        print("inside")
+        return render(request, 'notifications/notifications.html', {'notifications': notifications})
+    else:
+        redirect('login')

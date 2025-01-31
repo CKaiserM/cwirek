@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.dispatch import receiver
 from django.db.models.signals import post_save
+from django.urls import reverse
 
 # Create yard (podwórko) model
 
@@ -10,6 +12,8 @@ class Yard(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     likes = models.ManyToManyField(User, related_name="yard_like", blank=True)
     dislikes = models.ManyToManyField(User, related_name="yard_dislike", blank=True)
+
+#    slug = models.SlugField(unique=True, max_length=50)
 
     # Keep track of likes and dislikes
 
@@ -60,7 +64,12 @@ class ReplyToYardComment(models.Model):
 
     def __str__(self):
         return (f"{self.user} " f"({self.created_at:%Y-%m-%d %H:%M}): " f"{self.body[:30]}...")
-    
+
+class Notifications(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    message = models.TextField()
+    link = models.URLField(blank=True, null=True)
+    read = models.BooleanField(default=False)
 
 # Create a User Profile Model
 
@@ -70,7 +79,7 @@ class Profile(models.Model):
 
     date_modified = models.DateTimeField(User, auto_now=True)
 
-    profile_image = models.ImageField(null=True, blank=True, upload_to="images/")
+    profile_image = models.ImageField(null=True, blank=True, upload_to="images/", default="default_profile_pic.png")
     profile_bio = models.CharField(null=True, blank=True, max_length=1500)
     homepage_link = models.CharField(null=True, blank=True, max_length=100)
     facebook_link = models.CharField(null=True, blank=True, max_length=100)
@@ -91,3 +100,14 @@ def create_profile(sender, instance, created, **kwargs):
         user_profile.save()
 
 post_save.connect(create_profile, sender=User)
+
+@receiver(post_save, sender=CommentYard)
+def sent_comment_notification(sender, instance, created, **kwargs):
+    if created:
+        print(instance.user)
+        print(instance.yard.user)
+        message = f'{instance.user} answered on your Yard"'    
+        user = instance.yard.user
+        link = reverse('yard_show', args=[str(instance.yard.id)])
+        notification = Notifications(user=user, message=message, link=link)
+        notification.save()

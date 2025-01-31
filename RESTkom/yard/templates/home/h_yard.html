@@ -12,15 +12,13 @@
         <img
           src="{{ yard.user.profile.profile_image.url }}"
           alt=""
-          class="img-fluid rounded-circle mx-auto d-block"
-          style="max-width: 8vw; height: 100%"
+          class="img-fluid rounded-circle mx-auto d-block avatar"
         />
         {% else %}
         <img
           src="{% static 'img/default_profile_pic.png' %}"
           alt="{{yard.user.username}}"
-          class="img-fluid rounded-circle mx-auto d-block"
-          style="max-width: 8vw; height: 100%"
+          class="img-fluid rounded-circle mx-auto d-block avatar"
         />
         {% endif %}
     </div>
@@ -97,7 +95,7 @@
           </button>
           <!-- Share button -->
           <button type="button" class="btn btn-link">
-            <i class="fa-solid fa-share-nodes"></i>
+            <a href="{% url 'yard_show' yard.id %}"><i class="fa-solid fa-share-nodes"></i></a>
           </button>
       </div>
     </div>
