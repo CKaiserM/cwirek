@@ -30,22 +30,29 @@ class HomeView(APIView):
 
     def get(self, request):
         yards = Yard.objects.all().order_by("-created_at")
-        form = YardForm(request.POST or None)
-        commentform = CommentYardForm(request.POST or None)
-        replyToCommentForm = ReplyToCommentForm(request.POST or None)
-        yard_user = request.user
-        unread_notifications = Notifications.objects.filter(user=request.user, read=False).count()
-        return Response({"yards":yards, "form":form, 'yard_user': yard_user, 'commentform':commentform, "replyToCommentForm":replyToCommentForm, 'unread_notifications': unread_notifications})
+        if request.user.is_authenticated:
+            form = YardForm(request.POST or None)
+            commentform = CommentYardForm(request.POST or None)
+            replyToCommentForm = ReplyToCommentForm(request.POST or None)
+            yard_user = request.user
+            unread_notifications = Notifications.objects.filter(user=request.user, read=False).count()
+            return Response({"yards":yards, "form":form, 'yard_user': yard_user, 'commentform':commentform, "replyToCommentForm":replyToCommentForm, 'unread_notifications': unread_notifications})
+        else:
+            return Response({"yards":yards})
     
     def post(self, request):
-        form = YardForm(request.POST or None)
-        if request.method == "POST":
-            if form.is_valid():
-                yards = form.save(commit=False)
-                yards.user = request.user
-                yards.save()
-                messages.success(request, ("It is done!"))
-                return redirect('home')
+        if request.user.is_authenticated:
+            form = YardForm(request.POST or None)
+            if request.method == "POST":
+                if form.is_valid():
+                    yards = form.save(commit=False)
+                    yards.user = request.user
+                    yards.save()
+                    messages.success(request, ("It is done!"))
+                    return redirect('home')
+        else:
+            messages.success(request, ("Please log in"))
+            return redirect('login')
 
 class PostYardView(APIView):
     renderer_classes = [TemplateHTMLRenderer]
@@ -279,23 +286,26 @@ class PostCommentView(APIView):
     model = CommentYard
     template_name = 'yard/comment.html'
     fields = '__all__'
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, pk):
-        commentform = CommentYardForm(request.POST or None)
-        commentYard = CommentYard.objects.all()
-        return Response({'commentYard': commentYard, "commentform":commentform})
+        if request.user.is_authenticated:
+            commentform = CommentYardForm(request.POST or None)
+            commentYard = CommentYard.objects.all().order_by("-created_at")
+            return Response({'commentYard': commentYard, "commentform":commentform})
 
     def post(self, request, pk):
-        commentform = CommentYardForm(request.POST or None)
-        yard = get_object_or_404(Yard, pk=pk)
-        if request.method == "POST":
-            if commentform.is_valid():
-                comment = commentform.save(commit=False)
-                comment.yard = yard
-                comment.user = request.user
-                comment.save()
-                messages.success(request, ("It is done!"))
-                return redirect('home')
+        if request.user.is_authenticated:
+            commentform = CommentYardForm(request.POST or None)
+            yard = get_object_or_404(Yard, pk=pk)
+            if request.method == "POST":
+                if commentform.is_valid():
+                    comment = commentform.save(commit=False)
+                    comment.yard = yard
+                    comment.user = request.user
+                    comment.save()
+                    messages.success(request, ("It is done!"))
+                    return redirect('home')
 
     def comment_like(request, pk):
         if request.user.is_authenticated:  
@@ -387,10 +397,11 @@ class PostReplyView(APIView):
     model = ReplyToYardComment
     template_name = 'yard/reply.html'
     fields = '__all__'
+    permission_classes = [permissions.IsAuthenticated]
 
     def get(self, request, pk):
         replyToCommentForm = ReplyToCommentForm(request.POST or None)
-        replyToComment = ReplyToYardComment.objects.all()
+        replyToComment = ReplyToYardComment.objects.all().order_by("-created_at")
         return Response({'replyToComment': replyToComment, "replyToCommentForm":replyToCommentForm})
 
     def post(self, request, pk):
@@ -575,11 +586,13 @@ class SearchView(APIView):
             messages.success(request, ("Sorry, nothing found"))
             return render(request, "search/search.html", {})
 
+class NotificationsView(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    model = Notifications
+    template_name = 'notifications/notifications.html'
+    permission_classes = [permissions.IsAuthenticated]
 
-def notifications(request):
-    if request.user.is_authenticated:
-        notifications = Notifications.objects.filter(user=request.user).order_by('-id')
-        print("inside")
-        return render(request, 'notifications/notifications.html', {'notifications': notifications})
-    else:
-        redirect('login')
+    def get(self, request):
+        notifications = Notifications.objects.filter(user=request.user).order_by('-date_modified')
+        return Response({'notifications': notifications})
+

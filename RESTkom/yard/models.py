@@ -65,11 +65,6 @@ class ReplyToYardComment(models.Model):
     def __str__(self):
         return (f"{self.user} " f"({self.created_at:%Y-%m-%d %H:%M}): " f"{self.body[:30]}...")
 
-class Notifications(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    message = models.TextField()
-    link = models.URLField(blank=True, null=True)
-    read = models.BooleanField(default=False)
 
 # Create a User Profile Model
 
@@ -101,13 +96,30 @@ def create_profile(sender, instance, created, **kwargs):
 
 post_save.connect(create_profile, sender=User)
 
+class Notifications(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="notification_user")
+    author = models.OneToOneField(User, on_delete=models.CASCADE, related_name="author")
+    message = models.TextField()
+    link = models.URLField(blank=True, null=True)
+    read = models.BooleanField(default=False)
+    date_modified = models.DateTimeField(User, auto_now_add=True)
+
 @receiver(post_save, sender=CommentYard)
 def sent_comment_notification(sender, instance, created, **kwargs):
     if created:
-        print(instance.user)
-        print(instance.yard.user)
         message = f'{instance.user} answered on your Yard"'    
         user = instance.yard.user
+        author = instance.user
         link = reverse('yard_show', args=[str(instance.yard.id)])
-        notification = Notifications(user=user, message=message, link=link)
+        notification = Notifications(user=user, author=author, message=message, link=link)
+        notification.save()
+
+@receiver(post_save, sender=ReplyToYardComment)
+def sent_reply_notification(sender, instance, created, **kwargs):
+    if created:
+        message = f'{instance.user} replied to your comment"'    
+        user = instance.comment.user
+        author = instance.user
+        link = reverse('reply', args=[str(instance.comment.id)])
+        notification = Notifications(user=user, author=author, message=message, link=link)
         notification.save()

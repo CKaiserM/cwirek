@@ -41,9 +41,9 @@
           <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="search">
           <button class="btn btn-outline-success" type="submit">Search</button>
         </form>
-
+        <a href="{% url 'notifications' %}">
         <button type="button" class="btn btn-primary position-relative">
-          <a href="{% url 'notifications' %}">Notifications</a>
+          Notifications
           <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
              
               {{ unread_notifications }}
@@ -53,7 +53,7 @@
 
             <span class="visually-hidden">unread messages</span>
           </span>
-        </button>
+        </button></a>
       </div>
     </div>
   </nav>

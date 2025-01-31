@@ -1,5 +1,5 @@
 {% load static %} 
-
+{% if user.is_authenticated %}
 <!-- Button trigger add comment modal -->
 <div class="d-grid gap-1">
 <button type="button" class="btn btn-outline-primary btn-lg" data-bs-toggle="modal" data-bs-target="#postReply{{comment.id}}"> 
@@ -62,7 +62,7 @@
       </div>
     </div>
   </div>
-
+{% endif %}
 {% for reply in comment.replies.all %}
 
 

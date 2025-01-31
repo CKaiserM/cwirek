@@ -1,5 +1,5 @@
 {% load static %} 
-
+{% if user.is_authenticated %}
 <!-- Button trigger add comment modal -->
 <div class="d-grid gap-1">
 <button type="button" class="btn btn-outline-primary btn-lg" data-bs-toggle="modal" data-bs-target="#postComment{{yard.id}}"> 
@@ -35,7 +35,7 @@
             </div>
           </div>
         </div>
-            
+           
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>            
       {% if commentform %}
@@ -62,7 +62,7 @@
       </div>
     </div>
   </div>
-
+{% endif %}
 {% for comment in yard.comments.all %}
 
 <!-- -->
