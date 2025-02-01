@@ -3,6 +3,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 
+import after_response
+
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import api_view, permission_classes
@@ -84,7 +86,8 @@ class YardView(APIView):
 
     def get(self, request):
         yards = Yard.objects.all()
-        return Response({'yards':yards})
+        unread_notifications = Notifications.objects.filter(user=request.user, read=False).count()
+        return Response({'yards':yards, 'unread_notifications':unread_notifications})
     
     def yard_like(request, pk):
         if request.user.is_authenticated:  
@@ -180,8 +183,9 @@ class ProfileView(APIView):
 
     def get(self, request, pk):
         profile = Profile.objects.get(user_id=pk)
+        unread_notifications = Notifications.objects.filter(user=request.user, read=False).count()
         yards = Yard.objects.filter(user_id=pk).order_by("-created_at")  
-        return Response({"profile":profile, "yards":yards})
+        return Response({"profile":profile, "yards":yards, 'unread_notifications':unread_notifications})
     
     def post(self, request, pk):
         """
@@ -292,7 +296,8 @@ class PostCommentView(APIView):
         if request.user.is_authenticated:
             commentform = CommentYardForm(request.POST or None)
             commentYard = CommentYard.objects.all().order_by("-created_at")
-            return Response({'commentYard': commentYard, "commentform":commentform})
+            unread_notifications = Notifications.objects.filter(user=request.user, read=False).count()
+            return Response({'commentYard': commentYard, "commentform":commentform, 'unread_notifications':unread_notifications})
 
     def post(self, request, pk):
         if request.user.is_authenticated:
@@ -350,6 +355,7 @@ class PostCommentView(APIView):
             return redirect('home')
 
         #if request.user.is_authenticated:
+    
     def comment_delete(request, pk):
         if request.user.is_authenticated:  
             comment = get_object_or_404(CommentYard, id=pk)
@@ -402,7 +408,8 @@ class PostReplyView(APIView):
     def get(self, request, pk):
         replyToCommentForm = ReplyToCommentForm(request.POST or None)
         replyToComment = ReplyToYardComment.objects.all().order_by("-created_at")
-        return Response({'replyToComment': replyToComment, "replyToCommentForm":replyToCommentForm})
+        unread_notifications = Notifications.objects.filter(user=request.user, read=False).count()
+        return Response({'replyToComment': replyToComment, "replyToCommentForm":replyToCommentForm, 'unread_notifications':unread_notifications})
 
     def post(self, request, pk):
         replyToCommentForm = ReplyToCommentForm(request.POST or None)
@@ -586,6 +593,13 @@ class SearchView(APIView):
             messages.success(request, ("Sorry, nothing found"))
             return render(request, "search/search.html", {})
 
+@after_response.enable
+def notifications_read(request):
+    notifications = Notifications.objects.filter(user=request.user)
+    for object in notifications:
+        object.read = True
+        object.save()
+
 class NotificationsView(APIView):
     renderer_classes = [TemplateHTMLRenderer]
     model = Notifications
@@ -594,5 +608,14 @@ class NotificationsView(APIView):
 
     def get(self, request):
         notifications = Notifications.objects.filter(user=request.user).order_by('-date_modified')
+        notifications_read.after_response(request)
         return Response({'notifications': notifications})
+    
+    
+    
+
+           
+
+
+
 

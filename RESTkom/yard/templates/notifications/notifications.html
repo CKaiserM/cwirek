@@ -3,13 +3,14 @@
 {% load static %} 
 {% load rest_framework %}
 {% block content %}
+
+
 {% for notification in notifications %}
-    {% if not notification.read %}
+{% if not notification.read %}
     <a href="{{ notification.link }}">
-    <div class="card mb-3 border-success-subtle">
+    <div class="card mb-3 border-success-subtle bg-info-subtle">
         <div class="row g-0">
           <div class="col-md-2 p-2">
-            {{notification.author}}
             {% if notification.author.profile.profile_image %}
               <img
                 src="{{ notification.author.profile.profile_image.url }}"
@@ -19,35 +20,51 @@
               {% else %}
               <img
                 src="{% static 'images/default_profile_pic.png' %}"
-                alt="{{notification.user.username}}"
+                alt="{{notification.author.username}}"
                 class="img-fluid rounded-circle mx-auto d-block avatar"
               />
               {% endif %}
-          </div>
-          
+          </div>         
           <div class="col-md-8">
             <div class="card-body">
-              <h5 class="card-title">{{ notification.user.username|lower}}</h5>
-              <p class="card-text"><small class="text-body-secondary">Posted {{ notification.date_modified }}</small></p>  
+              <h5 class="card-title">{{ notification.author.username}}</h5>
+              <p class="card-text">{{ notification.message }}</p>    
             </div>
-          </div>
-      
+          </div>   
         </div>
-      
-        <div class="row g-0">
-          <div class="col-md-12">
-            <div class="card-body">
-              <p class="card-text">{{ notification.message }}</p>  
-      
-          </div>
-        </div>
-      </div>
-      
       </div>
     </a>
+    {% elif notification.read %}
+    <a href="{{ notification.link }}">
+      <div class="card mb-3 border-success-subtle">
+          <div class="row g-0">
+            <div class="col-md-2 p-2">
+              {% if notification.author.profile.profile_image %}
+                <img
+                  src="{{ notification.author.profile.profile_image.url }}"
+                  alt=""
+                  class="img-fluid rounded-circle mx-auto d-block avatar"
+                />
+                {% else %}
+                <img
+                  src="{% static 'images/default_profile_pic.png' %}"
+                  alt="{{notification.author.username}}"
+                  class="img-fluid rounded-circle mx-auto d-block avatar"
+                />
+                {% endif %}
+            </div>         
+            <div class="col-md-8">
+              <div class="card-body">
+                <h5 class="card-title">{{ notification.author.username}}</h5>
+                <p class="card-text">{{ notification.message }}</p>    
+              </div>
+            </div>   
+          </div>
+        </div>
+      </a>
+    {% else %}
+    <h5 class="card-title">No Notifications Yet</h5>
     {% endif %}
-
-
     
 {% endfor %}
 {% endblock %}

@@ -35,4 +35,5 @@ urlpatterns = [
     path('yard/<int:pk>/reply', views.PostReplyView.as_view(), name="reply"),
     path('comment/<int:pk>/edit_reply/<int:pc>', views.PostReplyView.reply_edit, name="edit_reply"),
     path('notifications/', views.NotificationsView.as_view(), name="notifications"),
+    
 ]
