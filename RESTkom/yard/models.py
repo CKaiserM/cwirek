@@ -26,6 +26,9 @@ class Yard(models.Model):
     # Create string with user, date and body
     def __str__(self):
         return (f"{self.user} " f"({self.created_at:%Y-%m-%d %H:%M}): " f"{self.body}...")
+
+    class Meta:
+        ordering = ['-created_at']
     
 # Comment post model
 
@@ -46,6 +49,9 @@ class CommentYard(models.Model):
 
     def __str__(self):
         return (f"{self.user} " f"({self.created_at:%Y-%m-%d %H:%M}): " f"{self.body[:30]}...")
+    
+    class Meta:
+        ordering = ['-created_at']
 
 # Reply to comment model   
 
@@ -65,6 +71,9 @@ class ReplyToYardComment(models.Model):
 
     def __str__(self):
         return (f"{self.user} " f"({self.created_at:%Y-%m-%d %H:%M}): " f"{self.body[:30]}...")
+    
+    class Meta:
+        ordering = ['-created_at']
 
 
 # Create a User Profile Model
@@ -106,6 +115,9 @@ class Notifications(models.Model):
     link = models.URLField(blank=True, null=True)
     read = models.BooleanField(default=False)
     date_modified = models.DateTimeField(User, auto_now_add=True)
+
+    class Meta:
+        ordering = ['-date_modified']
 
 # Signal Receivers (post_save) for Yard, Comment and Reply. If created, the receivers will save new Notification object with User and Author. 
 
