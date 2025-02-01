@@ -3,25 +3,30 @@ from .models import Yard, Profile, CommentYard, ReplyToYardComment
 from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.contrib.auth.models import User
 
+# Profile bio, image and social links form
+
 class ProfileMiscForm(forms.ModelForm):
     profile_image = forms.ImageField(label="Profile Picture")
-    profile_bio = forms.CharField(label="Profile Bio", widget=forms.Textarea(attrs={'class':'form-control', 'placeholder':'Profile Bio'}))
-    homepage_link = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Personal homepage'}))
-    facebook_link = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Facebook link'}))
-    instagram_link = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Instagram link'}))
-    linkedin_link = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Linkedin link'}))
-    youtube_link = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Linkedin link'}))
+    profile_bio = forms.CharField(label="Profile Bio", widget=forms.Textarea(attrs={'class':'form-control', 'placeholder':'Profile Bio'}), required=False)
+    homepage_link = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Personal homepage'}), required=False)
+    facebook_link = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Facebook link'}), required=False)
+    instagram_link = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Instagram link'}), required=False)
+    linkedin_link = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Linkedin link'}), required=False)
+    youtube_link = forms.CharField(widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Linkedin link'}), required=False)
 
     class Meta:
         model = Profile
         fields = ('profile_image', 'profile_bio', 'homepage_link', 'facebook_link', 'instagram_link', 'linkedin_link','youtube_link',)
 
+# Form for posting Yards
 
 class YardForm(forms.ModelForm):
     body = forms.CharField(required=True, widget=forms.widgets.Textarea(attrs={"placeholder": "Enter your message.", "class":"form-control", "id":"postYard",}), label="", max_length=250, )
     class Meta:
         model = Yard
         exclude = ("user", "likes", "dislikes",)
+
+# Form for commenting on Yard
 
 class CommentYardForm(forms.ModelForm):
     body = forms.CharField(required=True, widget=forms.widgets.Textarea(attrs={"placeholder": "Add your comment...", "class":"form-control",}), label="", max_length=250, )
@@ -30,12 +35,16 @@ class CommentYardForm(forms.ModelForm):
         field = ['body']
         exclude = ("user", "likes", "dislikes", "yard")
 
+# Form for Reply to Comment
+
 class ReplyToCommentForm(forms.ModelForm):
     body = forms.CharField(required=True, widget=forms.widgets.Textarea(attrs={"placeholder": "Reply to comment", "class":"form-control",}), label="", max_length=250, )
     class Meta:
         model = ReplyToYardComment
         field = ['body']
         exclude = ("user", "likes", "dislikes", "yard", "comment")
+
+# Sign-Up form
 
 class SignUpForm(UserCreationForm):
     email = forms.EmailField(label="", widget=forms.TextInput(attrs={'class':'form-control', 'placeholder':'Email Address'}))
@@ -63,6 +72,8 @@ class SignUpForm(UserCreationForm):
         self.fields['password2'].widget.attrs['placeholder'] = 'Confirm Password'
         self.fields['password2'].label = ''
         self.fields['password2'].help_text = '<span class="form-text text-muted"><small>Enter the same password as before, for verification.</small></span>'
+
+# Update user form
 
 class UpdateUserForm(UserChangeForm):
 

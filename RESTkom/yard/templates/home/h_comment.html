@@ -90,7 +90,7 @@
     <div class="col-md-8">
       <div class="card-body">
         <h5 class="card-title fs-6">{{ comment.user.username}}</h5>
-        <p class="card-text fs-6"><small class="text-body-secondary">Replied {{ comment.created_at }}</small></p>  
+        <p class="card-text fs-6"><small class="text-body-secondary">Replied {{ comment.created_at|timesince}} ago </small></p>  
       </div>
     </div>
     <div class="col-md-2 btn-group" role="group">

@@ -62,13 +62,15 @@
         <h5 class="card-header">Follows</h5>
         <div class="card-body">
           <p class="card-text">
-            {% for following in profile.follows.all %}
+            {% for following in profile.follows.all|slice:10 %}
+            {% if following.user.id != profile.user.id %}
             <a href="{% url 'profile' following.user.id %}">@{{ following }}</a>
             <a href="{% url 'unfollow' following.user.id %}">
               <i class="fa-solid fa-user-minus"></i>
             </a>
           </p>
           <br />
+          {% endif %}
           {% endfor %}
         </div>
         <div class="card-footer">
@@ -83,6 +85,7 @@
         <div class="card-body">
           <p class="card-text">
             {% for following in profile.followed_by.all|slice:10 %}
+            {% if following.user.id != profile.user.id %}
             <a href="{% url 'profile' following.user.id %}">@{{ following }}</a>
             {% if following in profile.follows.all %}
             <a href="{% url 'unfollow' following.user.id %}">
@@ -95,7 +98,7 @@
             {% endif %}
           </p>
           <br />
-
+          {% endif %}
           {% endfor %}
         </div>
         <div class="card-footer">
@@ -105,10 +108,11 @@
         </div>
       </div>
       <br />
-
+      {% if not profile.user.id %}
       <form method="POST">
         {% csrf_token %} 
         {% if profile in user.profile.follows.all %}
+        
         <button
           class="btn btn-outline-danger"
           name="follow"
@@ -127,7 +131,9 @@
           Follow @{{ profile.user.username }}
         </button>
         {% endif %}
+        
       </form>
+      {% endif %}
       <br />
       {% if request.user.id == profile.user.id %}
       <a href="{% url 'update_user' %}" class="btn btn-outline-secondary">

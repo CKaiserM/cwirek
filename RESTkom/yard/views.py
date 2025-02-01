@@ -188,17 +188,19 @@ class ProfileView(APIView):
         return Response({"profile":profile, "yards":yards, 'unread_notifications':unread_notifications})
     
     def post(self, request, pk):
-        """
-        profile = get_object_or_404(Profile, pk=pk)
-        serializer = ProfileSerializer(profile, data=request.data)
-        if not serializer.is_valid():
-            return Response({'serializer': serializer, 'profile': profile})
-        serializer.save()
-        return redirect('profile_list')
-        """
         profile = Profile.objects.get(user_id=pk)
         yards = Yard.objects.filter(user_id=pk).order_by("-created_at")  
         current_user_profile = request.user.profile
+
+        form = YardForm(request.POST or None)
+        if request.method == "POST":
+            if form.is_valid():
+                yards = form.save(commit=False)
+                yards.user = request.user
+                yards.save()
+                messages.success(request, ("It is done!"))
+                return redirect('profile')
+
         action = request.POST['follow']
         # follow or unfollow profile
         if action == "unfollow":
@@ -239,9 +241,6 @@ class ProfileView(APIView):
                 form.save()
                 username = form.cleaned_data['username']
                 password = form.cleaned_data['password1']
-                #first_name = form.cleaned_data['first_name']
-                #second_name = form.cleaned_data['second_name']
-                #email = form.cleaned_data['email']
                 
                 # Log in user
                 user = authenticate(username=username, password=password)
