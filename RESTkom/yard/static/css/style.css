@@ -24,6 +24,13 @@ button, a {
     object-fit: cover !important;
 }
 
+.avatar-bg {
+    width: 250px !important;
+    height: 250px !important;
+    position: relative !important;
+    object-fit: cover !important;
+}
+
 .profile-list-img{
     width: 150px !important;
     height: 150px !important;

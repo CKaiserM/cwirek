@@ -2,6 +2,9 @@ from django.contrib.auth.models import Group, User
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.views import PasswordResetView
+from django.urls import reverse_lazy
+from django.contrib.messages.views import SuccessMessageMixin
 
 import after_response
 
@@ -281,6 +284,17 @@ class ProfileListView(APIView):
         else:
             messages.success(request, ("You must be logged in to view this page..."))
             return redirect('home')           
+
+class ResetPasswordView(SuccessMessageMixin, PasswordResetView):
+    template_name = 'profile/reset_password.html'
+    email_template_name = 'profile/password_reset_email.html'
+    subject_template_name = 'profile/password_reset_subject'
+    success_message = "We've emailed you instructions for setting your password, " \
+                      "if an account exists with the email you entered. You should receive them shortly." \
+                      " If you don't receive an email, " \
+                      "please make sure you've entered the address you registered with, and check your spam folder."
+
+    success_url = reverse_lazy('profile')
 
 # Comment class
 

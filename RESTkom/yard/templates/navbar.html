@@ -2,7 +2,7 @@
 <nav class="navbar navbar-expand-lg bg-body-tertiary">
     <div class="container-fluid">
       <a class="navbar-brand" href="{% url 'home' %}">
-        Home
+        <i class="fa-solid fa-tree-city"></i>
     </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarScroll" aria-controls="navbarScroll" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -15,25 +15,22 @@
           {% if user.is_authenticated %}
         <li class="nav-item">
           <a class="nav-link" href="{% url 'profile' request.user.id %}"
-            >My Profile</a>
+            ><i class="fa-solid fa-user"></i> My Profile</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'profile_list' %}">Profile list</a>
+          <a class="nav-link" href="{% url 'profile_list' %}"><i class="fa-solid fa-address-book"></i> Profile list</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+          <a class="nav-link" href="{% url 'logout' %}"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
         </li>
         {% else %}
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'register' %}">Register</a>
+          <a class="nav-link" href="{% url 'register' %}"><i class="fa-solid fa-address-card"></i> Register</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'login' %}">Login</a>
+          <a class="nav-link" href="{% url 'login' %}"><i class="fa-solid fa-right-to-bracket"></i> Login</a>
         </li>
         {% endif %}
-          <li class="nav-item">
-            <a class="nav-link disabled" aria-disabled="true">Link</a>
-          </li>
         </ul>
 
         <form class="d-flex" action="{% url 'search_all' %}" method="POST">

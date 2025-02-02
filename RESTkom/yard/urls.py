@@ -14,6 +14,7 @@ urlpatterns = [
     path('logout', views.ProfileView.logout_user, name="logout"),
     path('register/', views.ProfileView.register_user, name="register"),
     path('update_user/', views.ProfileView.update_user, name="update_user"),
+    path('password-reset/', views.ResetPasswordView.as_view(), name='password_reset'),
     path('yard_likes/<int:pk>', views.YardView.yard_like, name="yard_like"),
     path('yard_dislikes/<int:pk>', views.YardView.yard_dislike, name="yard_dislike"),
     path('yard_show/<int:pk>', views.YardView.yard_show, name="yard_show"),
