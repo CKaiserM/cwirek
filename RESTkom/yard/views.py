@@ -135,6 +135,7 @@ class YardView(APIView):
             return redirect('home')
 
         #if request.user.is_authenticated:
+    
     def yard_delete(request, pk):
         if request.user.is_authenticated:  
             yard = get_object_or_404(Yard, id=pk)
@@ -624,8 +625,9 @@ class NotificationsView(APIView):
 
     def get(self, request):
         notifications = Notifications.objects.filter(user=request.user).order_by('-date_modified')
+        unread_notifications = Notifications.objects.filter(user=request.user, read=False).count()
         notifications_read.after_response(request)
-        return Response({'notifications': notifications})
+        return Response({'notifications': notifications, 'unread_notifications':unread_notifications})
     
     
     

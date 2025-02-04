@@ -32,14 +32,17 @@
         {% endif %}
         <li class="nav-item">
           <a href="{% url 'notifications' %}">
-            <button type="button" class="btn position-relative">
-              <i class="fa-solid fa-bell"></i> Notifications
-              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">       
+            <button type="button" class="btn position-relative">Notifications
+              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger mt-2">       
                   {{ unread_notifications }}
               </span>
-            </button></a>
+            </button>
+          </a>
         </li>
         </ul>
+
+
+  
 
         <form class="d-flex" action="{% url 'search_all' %}" method="POST">
           {% csrf_token %}

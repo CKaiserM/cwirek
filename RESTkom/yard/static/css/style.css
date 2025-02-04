@@ -37,3 +37,8 @@ button, a {
     position: relative !important;
     object-fit: cover !important;
 }
+
+.yard-img{
+    max-height: 250px;
+    margin: 0 auto;
+}
