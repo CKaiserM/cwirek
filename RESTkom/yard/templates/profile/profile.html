@@ -8,12 +8,10 @@
       <h1>{{ profile.user.username }}'s Profile</h1>
     </div>
     <div class="col-3">
-      
       {% if profile.user.username != user.username %}
       <form method="POST">
         {% csrf_token %} 
         {% if profile in user.profile.follows.all %}
-        
         <button
           class="btn btn-outline-danger"
           name="follow"
@@ -153,19 +151,21 @@
       {% if yards %}
       <div class="container">
         {% if user.is_authenticated %}
-          <div class="card border-info mb-3" >
-            <div class="row g-0">
-              <div class="col-md-2">
-                {% include 'home/h_profileimg.html'%}
-              </div>
-              <div class="col-md-10">
-                <div class="card-body">
-                  {% include 'home/h_post.html' %}
+          {% if request.user.id == profile.user.id %}
+            <div class="card border-info mb-3" >
+              <div class="row g-0">
+                <div class="col-md-2">
+                  {% include 'home/h_profileimg.html'%}
+                </div>
+                <div class="col-md-10">
+                  <div class="card-body">
+                    {% include 'home/h_post.html' %}
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-          {% endif %} 
+            </div>           
+          {% endif %}              
+        {% endif %} 
         {% include 'home/h_yard.html' %}
       {% endif %}
     </div>

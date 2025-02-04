@@ -205,7 +205,7 @@ class ProfileView(APIView):
                 yards.user = request.user
                 yards.save()
                 messages.success(request, ("It is done!"))
-                return redirect('profile')
+                return redirect(request.META.get("HTTP_REFERER"))
 
         action = request.POST['follow']
         # follow or unfollow profile
