@@ -22,8 +22,10 @@ class ProfileMiscForm(forms.ModelForm):
 
 class YardForm(forms.ModelForm):
     body = forms.CharField(required=True, widget=forms.widgets.Textarea(attrs={"placeholder": "Enter your message.", "class":"form-control", "id":"postYard",}), label="", max_length=250, )
+    yard_image = forms.ImageField(widget=forms.FileInput(attrs={"class":"form-control"}))
     class Meta:
         model = Yard
+        field = ['body', 'yard_image']
         exclude = ("user", "likes", "dislikes",)
 
 # Form for commenting on Yard

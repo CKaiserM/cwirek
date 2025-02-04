@@ -36,7 +36,7 @@ class HomeView(APIView):
     def get(self, request):
         yards = Yard.objects.all().order_by("-created_at")
         if request.user.is_authenticated:
-            form = YardForm(request.POST or None)
+            form = YardForm(request.POST or None, request.FILES or None)
             commentform = CommentYardForm(request.POST or None)
             replyToCommentForm = ReplyToCommentForm(request.POST or None)
             yard_user = request.user
@@ -47,7 +47,7 @@ class HomeView(APIView):
     
     def post(self, request):
         if request.user.is_authenticated:
-            form = YardForm(request.POST or None)
+            form = YardForm(request.POST or None, request.FILES or None)
             if request.method == "POST":
                 if form.is_valid():
                     yards = form.save(commit=False)
@@ -65,11 +65,11 @@ class PostYardView(APIView):
 
     def get(self, request):
         yards = Yard.objects.all()
-        form = YardForm(request.POST or None)
+        form = YardForm(request.POST or None, request.FILES or None)
         return Response({"yards":yards, "form":form})
     
     def post(self, request, pk):
-        form = YardForm(request.POST or None)
+        form = YardForm(request.POST or None, request.FILES or None)
         if request.method == "POST":
             if form.is_valid():
                 yards = form.save(commit=False)
@@ -155,7 +155,7 @@ class YardView(APIView):
             yard = get_object_or_404(Yard, id=pk)
             if request.user.username == yard.user.username:  
                 
-                form = YardForm(request.POST or None, instance=yard)
+                form = YardForm(request.POST or None, request.FILES or None, instance=yard)
 
                 #edit post
                 if request.method == "POST":
@@ -188,7 +188,7 @@ class ProfileView(APIView):
         profile = Profile.objects.get(user_id=pk)
         unread_notifications = Notifications.objects.filter(user=request.user, read=False).count()
         yards = Yard.objects.filter(user_id=pk).order_by("-created_at")
-        form = YardForm(request.POST or None)
+        form = YardForm(request.POST or None, request.FILES or None)
         commentform = CommentYardForm(request.POST or None)
         replyToCommentForm = ReplyToCommentForm(request.POST or None)          
         return Response({"profile":profile, "yards":yards, "form":form, 'commentform':commentform, "replyToCommentForm":replyToCommentForm, 'unread_notifications':unread_notifications})
@@ -198,7 +198,7 @@ class ProfileView(APIView):
         yards = Yard.objects.filter(user_id=pk).order_by("-created_at")  
         current_user_profile = request.user.profile
 
-        form = YardForm(request.POST or None)
+        form = YardForm(request.POST or None, request.FILES or None)
         if request.method == "POST":
             if form.is_valid():
                 yards = form.save(commit=False)
@@ -392,7 +392,7 @@ class PostCommentView(APIView):
             comment = get_object_or_404(CommentYard, id=pc)
             if request.user.username == comment.user.username:  
                 
-                commentform = YardForm(request.POST or None, instance=comment)
+                commentform = YardForm(request.POST or None, request.FILES or None, instance=comment)
                 yard = get_object_or_404(Yard, pk=pk)
                 #edit comment
                 if request.method == "POST":

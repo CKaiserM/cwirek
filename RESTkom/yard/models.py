@@ -14,6 +14,8 @@ class Yard(models.Model):
     likes = models.ManyToManyField(User, related_name="yard_like", blank=True)
     dislikes = models.ManyToManyField(User, related_name="yard_dislike", blank=True)
 
+    yard_image = models.ImageField(null=True, blank=True, upload_to="images/yard/")
+
 #    slug = models.SlugField(unique=True, max_length=50)
 
     # Keep track of likes and dislikes
@@ -84,7 +86,7 @@ class Profile(models.Model):
 
     date_modified = models.DateTimeField(User, auto_now=True)
 
-    profile_image = models.ImageField(blank=True, upload_to="images/", default="default_profile_pic.png")
+    profile_image = models.ImageField(blank=True, upload_to="images/profile/", default="default_profile_pic.png")
     profile_bio = models.CharField(null=True, blank=True, max_length=1500)
     homepage_link = models.CharField(null=True, blank=True, max_length=100)
     facebook_link = models.CharField(null=True, blank=True, max_length=100)
