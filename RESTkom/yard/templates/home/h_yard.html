@@ -70,7 +70,14 @@
     </div>
     <div class="col-md-10">
       <div class="card-body">
-        <p class="card-text">{{yard.body}}</p>  
+        <p class="card-text">{{yard.body}}</p>
+        {% if yard.yard_image %}
+        <img
+          src="{{ yard.yard_image.url }}"
+          alt=""
+          class="img-fluid rmx-auto d-block"
+        />
+        {% endif %}  
         <div class="btn-group" role="group" aria-label="yard bottom actions">
           <!-- reaction button -->
           <button type="button" class="btn btn-link">
@@ -84,8 +91,7 @@
             </a>
             <a href="{% url 'yard_dislike' yard.id %}">
               {{yard.number_of_dislikes}} 
-              {% if user in yard.dislikes.all %}
-            
+              {% if user in yard.dislikes.all %}           
                 <i class="fa-solid fa-thumbs-down"></i>
               {% else %} 
                 <i class="fa-regular fa-thumbs-down"></i>
