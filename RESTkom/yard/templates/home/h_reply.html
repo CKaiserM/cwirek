@@ -1,7 +1,7 @@
 {% load static %} 
 {% if user.is_authenticated %}
 <!-- Button trigger add comment modal -->
-<div class="d-grid gap-1">
+<div class="d-grid gap-3">
 <button type="button" class="btn btn-outline-primary btn-lg" data-bs-toggle="modal" data-bs-target="#postReply{{comment.id}}"> 
     Reply to comment
   </button>
@@ -12,19 +12,19 @@
     <div class="modal-content">
       <div class="modal-header">
         <div class="row g-0">
-          <div class="col-md-2">
+          <div class="col-md-4">
             {% if user.profile.profile_image %}
               <img
               src="{{ user.profile.profile_image.url }}"
               alt="{{user.username}}"
-              class="img-fluid rounded-circle mx-auto d-block"
+              class="img-fluid rounded-circle mx-auto d-block avatar-sm"
               style="max-width: 8vw; height: 100%"
               />
             {% else %}
               <img
                 src="{% static 'images/default_profile_pic.png' %}"
                 alt="{{user.username}}"
-                class="img-fluid rounded-circle mx-auto d-block"
+                class="img-fluid rounded-circle mx-auto d-block avatar-sm"
                 style="max-width: 8vw; height: 100%"
               />
             {% endif %}
@@ -75,14 +75,14 @@
         <img
           src="{{ reply.user.profile.profile_image.url }}"
           alt=""
-          class="img-fluid rounded-circle mx-auto d-block"
+          class="img-fluid rounded-circle mx-auto d-block avatar-sm"
           style="max-width: 5vw; height: 100%"
         />
         {% else %}
         <img
           src="{% static 'images/default_profile_pic.png' %}"
           alt="{{reply.user.username}}"
-          class="img-fluid rounded-circle mx-auto d-block"
+          class="img-fluid rounded-circle mx-auto d-block avatar-sm"
           style="max-width: 5vw; height: 100%"
         />
         {% endif %}
@@ -90,7 +90,7 @@
     
     <div class="col-md-8">
       <div class="card-body">
-        <h5 class="card-title fs-6">{{ reply.user.username}}</h5>
+        <h5 class="card-title fs-6"><a href="{% url 'profile' reply.user.id %}">{{ reply.user.username}}</a></h5>
         <p class="card-text fs-6"><small class="text-body-secondary">Replied {{ reply.created_at|timesince}} ago </small></p>  
       </div>
     </div>
@@ -130,8 +130,9 @@
   </div>
 
   <div class="row g-0">
-
-    <div class="col-md-12">
+    <div class="col-md-1 border-end border-light-subtle"></div>
+    <div class="col-md-1"></div>
+    <div class="col-md-10">
       <div class="card-body">
         <small>
         <p class="card-text">{{reply.body}}</p>

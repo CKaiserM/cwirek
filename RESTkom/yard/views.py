@@ -187,8 +187,11 @@ class ProfileView(APIView):
     def get(self, request, pk):
         profile = Profile.objects.get(user_id=pk)
         unread_notifications = Notifications.objects.filter(user=request.user, read=False).count()
-        yards = Yard.objects.filter(user_id=pk).order_by("-created_at")  
-        return Response({"profile":profile, "yards":yards, 'unread_notifications':unread_notifications})
+        yards = Yard.objects.filter(user_id=pk).order_by("-created_at")
+        form = YardForm(request.POST or None)
+        commentform = CommentYardForm(request.POST or None)
+        replyToCommentForm = ReplyToCommentForm(request.POST or None)          
+        return Response({"profile":profile, "yards":yards, "form":form, 'commentform':commentform, "replyToCommentForm":replyToCommentForm, 'unread_notifications':unread_notifications})
     
     def post(self, request, pk):
         profile = Profile.objects.get(user_id=pk)

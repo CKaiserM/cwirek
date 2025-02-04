@@ -16,15 +16,15 @@
                     {% if user.profile.profile_image %}
                     <img
                       src="{{ user.profile.profile_image.url }}"
-                      class="img-fluid rounded-circle"
-                      alt=""
+                      class="img-fluid rounded-circle avatar-sm"
+                      alt="{{user.username}}"
                       width="50"
                       height="50"
                     />
                     {% else %}
                     <img
                       src="{% static 'images/default_profile_pic.png' %}"
-                      class="img-fluid rounded-circle"
+                      class="img-fluid rounded-circle avatar-sm"
                       alt="{{user.username}}"
                       width="50"
                       height="50"
@@ -33,9 +33,7 @@
                   </div>
                   <div class="col-md-8">
                     <div class="card-body">
-                      <h5 class="card-title">{{ yard_user.username}}</h5>
-
-                      
+                      <h5 class="card-title">{{ user.username }}</h5>
                     </div>
                   </div>
                 </div>
@@ -45,35 +43,21 @@
         {% if form %}
         <form method="POST">
         <div class="modal-body">
-
-                {% csrf_token %} {{ form.as_p }}
+                {% csrf_token %} 
+                {{ form.as_p }}
                 <p class="text-end" id="remaining-chars"></p>
         </div>
         <div class="modal-footer">
-
-            
           <button type="submit" class="btn btn-primary">Post your Yard</button>
         </div>
       </form>
-
-
-
-
-      <script>
-
-function countChars(e) {
-
-  document.querySelector("#remaining-chars").innerHTML = e.target.maxLength - e.target.value.length + " characters left"
-}
-
-
-// use addEventListener rather that inline event handler
-// event object is automatically passed to event handler
-document.querySelector("#postYard").addEventListener(
-  "input",
-  countChars
-)
-      </script>
+      
+<script>
+  function countChars(e) {
+    document.querySelector("#remaining-chars").innerHTML = e.target.maxLength - e.target.value.length + " characters left"
+  }
+  document.querySelector("#postYard").addEventListener("input", countChars)
+</script>
       {% endif %}
       </div>
     </div>

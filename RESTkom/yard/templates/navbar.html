@@ -14,23 +14,31 @@
           </li>
           {% if user.is_authenticated %}
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'profile' request.user.id %}"
-            ><i class="fa-solid fa-user"></i> My Profile</a>
+          <a class="nav-link" href="{% url 'profile' request.user.id %}">My Profile</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'profile_list' %}"><i class="fa-solid fa-address-book"></i> Profile list</a>
+          <a class="nav-link" href="{% url 'profile_list' %}">Profile list</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'logout' %}"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
+          <a class="nav-link" href="{% url 'logout' %}">Logout</a>
         </li>
         {% else %}
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'register' %}"><i class="fa-solid fa-address-card"></i> Register</a>
+          <a class="nav-link" href="{% url 'register' %}">Register</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'login' %}"><i class="fa-solid fa-right-to-bracket"></i> Login</a>
+          <a class="nav-link" href="{% url 'login' %}">Login</a>
         </li>
         {% endif %}
+        <li class="nav-item">
+          <a href="{% url 'notifications' %}">
+            <button type="button" class="btn position-relative">
+              <i class="fa-solid fa-bell"></i> Notifications
+              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">       
+                  {{ unread_notifications }}
+              </span>
+            </button></a>
+        </li>
         </ul>
 
         <form class="d-flex" action="{% url 'search_all' %}" method="POST">
@@ -38,19 +46,8 @@
           <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="search">
           <button class="btn btn-outline-success" type="submit">Search</button>
         </form>
-        <a href="{% url 'notifications' %}">
-        <button type="button" class="btn btn-primary position-relative">
-          Notifications
-          <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-             
-              {{ unread_notifications }}
-            
-            
 
 
-            <span class="visually-hidden">unread messages</span>
-          </span>
-        </button></a>
       </div>
     </div>
   </nav>

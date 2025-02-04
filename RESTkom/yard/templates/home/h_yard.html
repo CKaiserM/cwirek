@@ -25,7 +25,7 @@
     
     <div class="col-md-8">
       <div class="card-body">
-        <h5 class="card-title">{{ yard.user.username|lower}}</h5>
+        <h5 class="card-title"><a href="{% url 'profile' yard.user.id %}">{{ yard.user.username}}</a></h5>
         <p class="card-text"><small class="text-body-secondary">Posted {{ yard.created_at|timesince}} ago </small></p>  
       </div>
     </div>
@@ -65,7 +65,10 @@
   </div>
 
   <div class="row g-0">
-    <div class="col-md-12">
+    <div class="col-md-2">
+      
+    </div>
+    <div class="col-md-10">
       <div class="card-body">
         <p class="card-text">{{yard.body}}</p>  
         <div class="btn-group" role="group" aria-label="yard bottom actions">
@@ -89,6 +92,7 @@
             {% endif %}
             </a>
           </button>
+          
           <!-- Comment button -->
           <button type="button" class="btn btn-link" data-bs-toggle="collapse" href="#comment{{yard.id}}" role="button" aria-expanded="false" aria-controls="comment{{yard.id}}">
             {{ yard.comments.count }} <i class="fa-regular fa-comment"></i>
