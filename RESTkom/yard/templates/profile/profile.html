@@ -34,9 +34,9 @@
       </form>
       {% endif %}
     </div>
-    <div class="col-3">
+    <div class="col-3 position-relative ">
       {% if request.user.id == profile.user.id %}
-      <a href="{% url 'update_user' %}" class="btn btn-outline-secondary">
+      <a href="{% url 'update_user' %}" class="btn btn-outline-secondary position-absolute top-0 end-0">
         <i class="fa-solid fa-user-pen"></i>
       </a>
       {% endif %}

@@ -1,6 +1,6 @@
 from django.contrib.auth.models import Group, User
 from rest_framework import serializers
-from .models import Yard, Profile, CommentYard
+from .models import Yard, Profile, CommentYard, ReplyToYardComment
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -25,4 +25,9 @@ class YardSerializer(serializers.ModelSerializer):
 class CommentYardSerializer(serializers.ModelSerializer):
     class Meta:
         model = CommentYard
+        fields = "__all__"
+
+class CommentReplySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ReplyToYardComment
         fields = "__all__"
