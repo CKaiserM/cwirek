@@ -42,3 +42,7 @@ button, a {
     max-height: 250px;
     margin: 0 auto;
 }
+
+.modal-link{
+    color:white;
+}

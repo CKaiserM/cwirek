@@ -2,7 +2,8 @@ from django.contrib.auth.models import Group, User
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.views import PasswordResetView
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.views import PasswordResetView, PasswordChangeView
 from django.urls import reverse_lazy
 from django.contrib.messages.views import SuccessMessageMixin
 
@@ -17,7 +18,7 @@ from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .serializers import UserSerializer, YardSerializer, ProfileSerializer
+from .serializers import UserSerializer, YardSerializer, ProfileSerializer, CommentYardSerializer, CommentReplySerializer
 from .models import Yard, Profile, User, CommentYard, ReplyToYardComment, Notifications
 from .forms import YardForm, SignUpForm, UpdateUserForm, ProfileMiscForm, CommentYardForm, ReplyToCommentForm
 
@@ -29,151 +30,7 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticated]
 
-class HomeView(APIView):
-    renderer_classes = [TemplateHTMLRenderer]
-    template_name = 'home.html'
-
-    def get(self, request):
-        yards = Yard.objects.all().order_by("-created_at")
-        if request.user.is_authenticated:
-            form = YardForm(request.POST or None, request.FILES or None)
-            commentform = CommentYardForm(request.POST or None)
-            replyToCommentForm = ReplyToCommentForm(request.POST or None)
-            yard_user = request.user
-            unread_notifications = Notifications.objects.filter(user=request.user, read=False).count()
-            return Response({"yards":yards, "form":form, 'yard_user': yard_user, 'commentform':commentform, "replyToCommentForm":replyToCommentForm, 'unread_notifications': unread_notifications})
-        else:
-            return Response({"yards":yards})
-    
-    def post(self, request):
-        if request.user.is_authenticated:
-            form = YardForm(request.POST or None, request.FILES or None)
-            if request.method == "POST":
-                if form.is_valid():
-                    yards = form.save(commit=False)
-                    yards.user = request.user
-                    yards.save()
-                    messages.success(request, ("It is done!"))
-                    return redirect('home')
-        else:
-            messages.success(request, ("Please log in"))
-            return redirect('login')
-
-class PostYardView(APIView):
-    renderer_classes = [TemplateHTMLRenderer]
-    template_name = 'yard/post.html'
-
-    def get(self, request):
-        yards = Yard.objects.all()
-        form = YardForm(request.POST or None, request.FILES or None)
-        return Response({"yards":yards, "form":form})
-    
-    def post(self, request, pk):
-        form = YardForm(request.POST or None, request.FILES or None)
-        if request.method == "POST":
-            if form.is_valid():
-                yards = form.save(commit=False)
-                yards.user = request.user
-                yards.save()
-                messages.success(request, ("It is done!"))
-                return redirect('home')
-
-class YardViewSet(ListCreateAPIView):
-    queryset = Yard.objects.all()
-    serializer_class = YardSerializer
-    #permission_classes = [permissions.IsAuthenticated]
-
-class YardView(APIView):
-    renderer_classes = [TemplateHTMLRenderer]
-    template_name = 'yard/yard.html'
-
-    def get(self, request):
-        yards = Yard.objects.all()
-        unread_notifications = Notifications.objects.filter(user=request.user, read=False).count()
-        return Response({'yards':yards, 'unread_notifications':unread_notifications})
-    
-    def yard_like(request, pk):
-        if request.user.is_authenticated:  
-            yard = get_object_or_404(Yard, id=pk)
-            
-            # if dislike exists, remove
-            if yard.dislikes.filter(id=request.user.id):
-                yard.dislikes.remove(request.user)
-
-            if yard.likes.filter(id=request.user.id):
-                yard.likes.remove(request.user)
-            else:
-                yard.likes.add(request.user)  
-        else:
-            return redirect('home')    
-        return redirect(request.META.get("HTTP_REFERER"))
-
-    def yard_dislike(request, pk):
-        if request.user.is_authenticated:  
-            yard = get_object_or_404(Yard, id=pk)
-
-            # if like exists, remove
-            if yard.likes.filter(id=request.user.id):
-                yard.likes.remove(request.user)  
-                
-            if yard.dislikes.filter(id=request.user.id):
-                yard.dislikes.remove(request.user)
-            else:
-                yard.dislikes.add(request.user)
-
-        else:
-            return redirect('home')    
-        return redirect(request.META.get("HTTP_REFERER"))
-
-    def yard_show(request, pk):
-        yard = get_object_or_404(Yard, id=pk)
-        
-        if yard:
-            return render(request, "yard/show_yard.html", {'yard':yard})
-        else:
-            messages.success(request, ("This post does not exist"))
-            return redirect('home')
-
-        #if request.user.is_authenticated:
-    
-    def yard_delete(request, pk):
-        if request.user.is_authenticated:  
-            yard = get_object_or_404(Yard, id=pk)
-            #check ownership
-            if request.user.username == yard.user.username:
-                #delete
-                yard.delete()
-                return redirect(request.META.get("HTTP_REFERER"))
-            else:
-                messages.success(request, ("not your yard"))
-                return redirect(request.META.get("HTTP_REFERER"))
-        else:
-            messages.success(request, ("Please log in."))
-            return redirect('login')
-
-    def yard_edit(request, pk):
-        if request.user.is_authenticated:
-            yard = get_object_or_404(Yard, id=pk)
-            if request.user.username == yard.user.username:  
-                
-                form = YardForm(request.POST or None, request.FILES or None, instance=yard)
-
-                #edit post
-                if request.method == "POST":
-                    if form.is_valid():
-                        yards = form.save(commit=False)
-                        yards.user = request.user
-                        yards.save()
-                        messages.success(request, ("It is done!"))
-                        return redirect('home')
-                else:
-                    return render(request, "yard/edit_yard.html", {'form':form, 'yard':yard})
-            else:
-                messages.success(request, ("not your yard"))
-                return redirect('home')
-        else:
-            messages.success(request, ("Please log in."))
-            return redirect('login')
+# Profile, profile list view class + Reset and Change password
 
 class ProfileViewSet(ListCreateAPIView):
     queryset = Profile.objects.all()
@@ -297,10 +154,172 @@ class ResetPasswordView(SuccessMessageMixin, PasswordResetView):
                       "if an account exists with the email you entered. You should receive them shortly." \
                       " If you don't receive an email, " \
                       "please make sure you've entered the address you registered with, and check your spam folder."
+    success_url = reverse_lazy('home')
 
-    success_url = reverse_lazy('profile')
+class ChangePasswordView(PasswordChangeView):
+    form_class = PasswordChangeForm
+    success_url = reverse_lazy('home')
+    template_name = 'profile/change_password.html'
+    success_message = "Password has been changed!"    
 
-# Comment class
+# Home view class
+
+class HomeView(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'home.html'
+
+    def get(self, request):
+        yards = Yard.objects.all().order_by("-created_at")
+        if request.user.is_authenticated:
+            form = YardForm(request.POST or None, request.FILES or None)
+            commentform = CommentYardForm(request.POST or None)
+            replyToCommentForm = ReplyToCommentForm(request.POST or None)
+            yard_user = request.user
+            unread_notifications = Notifications.objects.filter(user=request.user, read=False).count()
+            return Response({"yards":yards, "form":form, 'yard_user': yard_user, 'commentform':commentform, "replyToCommentForm":replyToCommentForm, 'unread_notifications': unread_notifications})
+        else:
+            return Response({"yards":yards})
+    
+    def post(self, request):
+        if request.user.is_authenticated:
+            form = YardForm(request.POST or None, request.FILES or None)
+            if request.method == "POST":
+                if form.is_valid():
+                    yards = form.save(commit=False)
+                    yards.user = request.user
+                    yards.save()
+                    messages.success(request, ("It is done!"))
+                    return redirect('home')
+        else:
+            messages.success(request, ("Please log in"))
+            return redirect('login')
+
+# Post yard view class
+
+class PostYardView(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'yard/post.html'
+
+    def get(self, request):
+        yards = Yard.objects.all()
+        form = YardForm(request.POST or None, request.FILES or None)
+        return Response({"yards":yards, "form":form})
+    
+    def post(self, request, pk):
+        form = YardForm(request.POST or None, request.FILES or None)
+        if request.method == "POST":
+            if form.is_valid():
+                yards = form.save(commit=False)
+                yards.user = request.user
+                yards.save()
+                messages.success(request, ("It is done!"))
+                return redirect('home')
+
+class YardViewSet(ListCreateAPIView):
+    queryset = Yard.objects.all()
+    serializer_class = YardSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+# Single Yard (main posts) view class
+
+class YardView(APIView):
+    renderer_classes = [TemplateHTMLRenderer]
+    template_name = 'yard/yard.html'
+
+    def get(self, request):
+        yards = Yard.objects.all()
+        unread_notifications = Notifications.objects.filter(user=request.user, read=False).count()
+        return Response({'yards':yards, 'unread_notifications':unread_notifications})
+    
+    def yard_like(request, pk):
+        if request.user.is_authenticated:  
+            yard = get_object_or_404(Yard, id=pk)
+            
+            # if dislike exists, remove
+            if yard.dislikes.filter(id=request.user.id):
+                yard.dislikes.remove(request.user)
+
+            if yard.likes.filter(id=request.user.id):
+                yard.likes.remove(request.user)
+            else:
+                yard.likes.add(request.user)  
+        else:
+            return redirect('home')    
+        return redirect(request.META.get("HTTP_REFERER"))
+
+    def yard_dislike(request, pk):
+        if request.user.is_authenticated:  
+            yard = get_object_or_404(Yard, id=pk)
+
+            # if like exists, remove
+            if yard.likes.filter(id=request.user.id):
+                yard.likes.remove(request.user)  
+                
+            if yard.dislikes.filter(id=request.user.id):
+                yard.dislikes.remove(request.user)
+            else:
+                yard.dislikes.add(request.user)
+
+        else:
+            return redirect('home')    
+        return redirect(request.META.get("HTTP_REFERER"))
+
+    def yard_show(request, pk):
+        yard = get_object_or_404(Yard, id=pk)
+        
+        if yard:
+            return render(request, "yard/show_yard.html", {'yard':yard})
+        else:
+            messages.success(request, ("This post does not exist"))
+            return redirect('home')
+
+        #if request.user.is_authenticated:
+    
+    def yard_delete(request, pk):
+        if request.user.is_authenticated:  
+            yard = get_object_or_404(Yard, id=pk)
+            #check ownership
+            if request.user.username == yard.user.username:
+                #delete
+                yard.delete()
+                return redirect(request.META.get("HTTP_REFERER"))
+            else:
+                messages.success(request, ("not your yard"))
+                return redirect(request.META.get("HTTP_REFERER"))
+        else:
+            messages.success(request, ("Please log in."))
+            return redirect('login')
+
+    def yard_edit(request, pk):
+        if request.user.is_authenticated:
+            yard = get_object_or_404(Yard, id=pk)
+            if request.user.username == yard.user.username:  
+                
+                form = YardForm(request.POST or None, request.FILES or None, instance=yard)
+
+                #edit post
+                if request.method == "POST":
+                    if form.is_valid():
+                        yards = form.save(commit=False)
+                        yards.user = request.user
+                        yards.save()
+                        messages.success(request, ("It is done!"))
+                        return redirect('home')
+                else:
+                    return render(request, "yard/edit_yard.html", {'form':form, 'yard':yard})
+            else:
+                messages.success(request, ("not your yard"))
+                return redirect('home')
+        else:
+            messages.success(request, ("Please log in."))
+            return redirect('login')
+
+# Comment view class
+
+class PostCommentViewSet(ListCreateAPIView):
+    queryset = CommentYard.objects.all()
+    serializer_class = CommentYardSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
 class PostCommentView(APIView):
     renderer_classes = [TemplateHTMLRenderer]
@@ -413,7 +432,12 @@ class PostCommentView(APIView):
             messages.success(request, ("Please log in."))
             return redirect('login')
 
-# Reply to comment class
+# Reply to comment view class
+
+class PostReplyViewSet(ListCreateAPIView):
+    queryset = ReplyToYardComment.objects.all()
+    serializer_class = CommentReplySerializer
+    permission_classes = [permissions.IsAuthenticated]
 
 class PostReplyView(APIView):
     renderer_classes = [TemplateHTMLRenderer]
@@ -523,7 +547,8 @@ class PostReplyView(APIView):
         else:
             messages.success(request, ("Please log in."))
             return redirect('login')
-# Follow class
+
+# Follow user view class
 
 class FollowView(APIView):
 
@@ -571,6 +596,8 @@ class FollowView(APIView):
             messages.success(request, ("You must be logged in to view this page..."))
             return redirect('home')    
 
+# Search all view class
+
 class SearchView(APIView):   
 
     def yard_search(request):
@@ -610,12 +637,16 @@ class SearchView(APIView):
             messages.success(request, ("Sorry, nothing found"))
             return render(request, "search/search.html", {})
 
+# Following function enables action after Notification is opened (sets read attribute tu true). 
+
 @after_response.enable
 def notifications_read(request):
     notifications = Notifications.objects.filter(user=request.user)
     for object in notifications:
         object.read = True
         object.save()
+
+# Notifications view class
 
 class NotificationsView(APIView):
     renderer_classes = [TemplateHTMLRenderer]
