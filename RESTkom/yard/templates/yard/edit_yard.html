@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container text-center">
+<div class="row">
+    <div class="col-12">
+            <div class="alert alert-dark" role="alert">
+            <div class="container">
+              <div class="row g-0">
+                <div class="col-md-4">
+                    {% if yard.user.profile.profile_image %}
+                    <img
+                      src="{{ yard.user.profile.profile_image.url }}"
+                      alt=""
+                      class="img-fluid rounded-circle mx-auto d-block avatar"
+                    />
+                    {% else %}
+                    <img
+                      src="{% static 'img/default_profile_pic.png' %}"
+                      alt="{{yard.user.username}}"
+                      class="img-fluid rounded-circle mx-auto d-block avatar"
+                    />
+                    {% endif %}
+                  
+                  </div>
+                  <div class="col-8">
+                        {{ yard.body }}<br/>
+                        {% if yard.yard_image %}
+                        <img
+                          src="{{ yard.yard_image.url }}"
+                          alt=""
+                          class="img-fluid rmx-auto d-block"
+                        />
+                        {% endif %}  
+                        <small class="text-muted">
+                            {{ yard.created_at }} By @{{ yard.user.username|lower}}
+                            {% if user in yard.likes.all %}
+                            - {{yard.number_of_likes}} Likes - <a href="{% url 'yard_like' yard.id %}">Unlike</a>
+                            {% else %}
+                            - {{yard.number_of_likes}} Likes - <a href="{% url 'yard_like' yard.id %}">Like</a>
+                            {% endif %}
+
+                            {% if user in yard.dislikes.all %}
+                            - {{yard.number_of_dislikes}} Disikes - <a href="{% url 'yard_dislike' yard.id %}">Undislike</a>
+                            {% else %}
+                            - {{yard.number_of_dislikes}} Dislikes - <a href="{% url 'yard_dislike' yard.id %}">Dislike</a>
+                            {% endif %}
+                        </small>
+                </div><br/><br/>
+              </div>
+            </div>
+          </div>
+
+
+        {% if form %}
+        <form method=POST enctype="multipart/form-data">
+        {% csrf_token %}
+            {{ form.as_p }}
+            
+            <button type="submit" class="btn btn-secondary">Submit</button>
+        </form>
+        {% endif %}
+    </div>
+</div>
+</div>
+{% endblock %}

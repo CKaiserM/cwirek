@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container text-center">
+<div class="row">
+    <div class="col-8">
+            <div class="alert alert-dark" role="alert">
+            <div class="container">
+                <div class="row">
+                  <div class="col-1">
+
+                    {% if reply.user.profile.profile_image %}
+                    <img src="{{ reply.user.profile.profile_image.url }}" alt="" class="rounded-circle" width=50 height=50>
+                    {% else %}
+                    <img src="{% static 'images/default_profile_pic.png' %}" alt="{{reply.user.username}}" class="rounded-circle" width=50 height=50>
+                    {% endif %}
+                  
+                  </div>
+                  <div class="col-10">
+                        {{ reply.body }}<br/>
+                        <small class="text-muted">
+                            {{ reply.created_at }} By @{{ reply.user.username|lower}}
+                            {% if user in yard.likes.all %}
+                            - {{reply.number_of_likes}} Likes - <a href="{% url 'reply_like' reply.id %}">Unlike</a>
+                            {% else %}
+                            - {{reply.number_of_likes}} Likes - <a href="{% url 'reply_like' reply.id %}">Like</a>
+                            {% endif %}
+
+                            {% if user in reply.dislikes.all %}
+                            - {{reply.number_of_dislikes}} Disikes - <a href="{% url 'reply_dislike' reply.id %}">Undislike</a>
+                            {% else %}
+                            - {{reply.number_of_dislikes}} Dislikes - <a href="{% url 'reply_dislike' reply.id %}">Dislike</a>
+                            {% endif %}
+                        </small>
+                </div><br/><br/>
+              </div>
+            </div>
+          </div>
+
+
+        {% if replyForm %}
+        <form method=POST>
+        {% csrf_token %}
+            {{ replyForm.as_p }}
+            <button type="submit" class="btn btn-secondary">Submit</button>
+        </form>
+        {% endif %}
+    </div>
+</div></div>
+{% endblock %}

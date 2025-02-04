@@ -1,0 +1,175 @@
+{% extends 'base.html' %} 
+{% load static %} 
+{% block content %} 
+{% if profile %}
+<div class="container-xl">
+  <div class="row">
+    <div class="col-6">
+      <h1>{{ profile.user.username }}'s Profile</h1>
+    </div>
+    <div class="col-3">
+      {% if profile.user.username != user.username %}
+      <form method="POST">
+        {% csrf_token %} 
+        {% if profile in user.profile.follows.all %}
+        <button
+          class="btn btn-outline-danger"
+          name="follow"
+          value="unfollow"
+          type="submit"
+        >
+          Unfollow @{{ profile.user.username }}
+        </button>
+        {% else %}
+        <button
+          class="btn btn-outline-success"
+          name="follow"
+          value="follow"
+          type="submit"
+        >
+          Follow @{{ profile.user.username }}
+        </button>
+        {% endif %}
+        
+      </form>
+      {% endif %}
+    </div>
+    <div class="col-3">
+      {% if request.user.id == profile.user.id %}
+      <a href="{% url 'update_user' %}" class="btn btn-outline-secondary">
+        <i class="fa-solid fa-user-pen"></i>
+      </a>
+      {% endif %}
+    </div>
+  </div>
+  <div class="row mb-3">
+    <div class="col-4">
+      {% if profile.profile_image %}
+      <img
+        src="{{ profile.profile_image.url }}"
+        class="rounded-circle img-thumbnail avatar-bg"
+      />
+      {% endif%} 
+    </div>
+    <div class="col-8">
+      {% if profile.profile_bio %}
+      <p align="justify">{{ profile.profile_bio }}</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="row mb-3">
+    <div class="col-4">
+      <div class="card mb-3">
+        <h5 class="card-header">Socials</h5>
+        <div class="card-body">
+          {% if profile.homepage_link %}
+          <a href="{{ profile.homepage_link }}" target="new">
+            <i class="fa-solid fa-link"></i>
+          </a>
+          {% endif %} 
+    
+          {% if profile.facebook_link %}
+          <a href="{{ profile.facebook_link }}" target="new">
+            <i class="fa-brands fa-facebook"></i>
+          </a>
+          {% endif %} 
+    
+          {% if profile.instagram_link %}
+          <a href="{{ profile.instagram_link }}" target="new">
+            <i class="fa-brands fa-instagram"></i>
+          </a>
+          {% endif %} 
+    
+          {% if profile.linkedin_link %}
+          <a href="{{ profile.linkedin_link }}" target="new">
+            <i class="fa-brands fa-linkedin"></i>
+          </a>
+          {% endif %} 
+    
+          {% if profile.youtube_link %}
+          <a href="{{ profile.youtube_link }}" target="new">
+            <i class="fa-brands fa-youtube"></i>
+          </a>
+          {% endif %}
+        </div>
+      </div>
+
+
+      <div class="card mb-3">
+        <h5 class="card-header">Follows</h5>
+        <div class="card-body">
+          <p class="card-text">
+            {% for following in profile.follows.all|slice:10 %}
+            {% if following.user.id != profile.user.id %}
+            <a href="{% url 'profile' following.user.id %}">@{{ following }}</a>
+            <a href="{% url 'unfollow' following.user.id %}">
+              <i class="fa-solid fa-user-minus"></i>
+            </a>
+          </p>
+          <br />
+          {% endif %}
+          {% endfor %}
+        </div>
+        <div class="card-footer">
+          <a href="{% url 'follows' profile.user.id %}"
+            ><i class="fa-solid fa-user-secret"></i
+          ></a>
+        </div>
+      </div>
+
+      <div class="card">
+        <h5 class="card-header">Followed by</h5>
+        <div class="card-body">
+          <p class="card-text">
+            {% for following in profile.followed_by.all|slice:10 %}
+            {% if following.user.id != profile.user.id %}
+            <a href="{% url 'profile' following.user.id %}">@{{ following }}</a>
+            {% if following in profile.follows.all %}
+            <a href="{% url 'unfollow' following.user.id %}">
+              <i class="fa-solid fa-user-minus"></i>
+            </a>
+            {% else %}
+            <a href="{% url 'follow' following.user.id %}">
+              <i class="fa-solid fa-user-plus"></i>
+            </a>
+            {% endif %}
+          </p>
+          <br />
+          {% endif %}
+          {% endfor %}
+        </div>
+        <div class="card-footer">
+          <a href="{% url 'followers' profile.user.id %}">
+            <i class="fa-solid fa-users"></i>
+          </a>
+        </div>
+      </div>
+
+    </div>
+    <div class="col-8">
+      {% if yards %}
+      <div class="container">
+        {% if user.is_authenticated %}
+          {% if request.user.id == profile.user.id %}
+            <div class="card border-info mb-3" >
+              <div class="row g-0">
+                <div class="col-md-2">
+                  {% include 'home/h_profileimg.html'%}
+                </div>
+                <div class="col-md-10">
+                  <div class="card-body">
+                    {% include 'home/h_post.html' %}
+                  </div>
+                </div>
+              </div>
+            </div>           
+          {% endif %}              
+        {% endif %} 
+        {% include 'home/h_yard.html' %}
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endif %} 
+{% endblock %}

@@ -1,0 +1,181 @@
+{% extends 'base.html' %} 
+{% load static %} 
+{% block content %}
+{% load rest_framework %}
+
+<div class="card mb-3 border-success-subtle">
+  <div class="row g-0">
+    <div class="col-md-2 p-2">
+      {% if yard.user.profile.profile_image %}
+        <img
+          src="{{ yard.user.profile.profile_image.url }}"
+          alt=""
+          class="img-fluid rounded-circle mx-auto d-block avatar"
+        />
+        {% else %}
+        <img
+          src="{% static 'img/default_profile_pic.png' %}"
+          alt="{{yard.user.username}}"
+          class="img-fluid rounded-circle mx-auto d-block avatar"
+        />
+        {% endif %}
+    </div>
+    
+    <div class="col-md-8">
+      <div class="card-body">
+        <h5 class="card-title">{{ yard.user.username|lower}}</h5>
+        <p class="card-text"><small class="text-body-secondary">Posted {{ yard.created_at }}</small></p>  
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-0">
+    <div class="col-md-12">
+      <div class="card-body">
+        <p class="card-text">{{yard.body}}</p>  
+        <div class="btn-group" role="group" aria-label="yard bottom actions">
+          <!-- reaction button -->
+          <button type="button" class="btn btn-link">
+
+              {{yard.number_of_likes}}
+              {% if yard.likes.all %}
+                <i class="fa-solid fa-thumbs-up"></i>
+              {% else %} 
+                <i class="fa-regular fa-thumbs-up"></i>
+              {% endif %}
+
+              {{yard.number_of_dislikes}} 
+              {% if yard.dislikes.all %}
+                <i class="fa-solid fa-thumbs-down"></i>
+              {% else %} 
+                <i class="fa-regular fa-thumbs-down"></i>
+            {% endif %}
+            </a>
+          </button>
+          <!-- Comment button -->
+          <button type="button" class="btn btn-link" data-bs-toggle="collapse" href="#comment{{yard.id}}" role="button" aria-expanded="false" aria-controls="comment{{yard.id}}">
+            {{ yard.comments.count }} <i class="fa-regular fa-comment"></i>
+          </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- comment section modal -->
+  <div class="collapse" id="comment{{yard.id}}">
+    <div class="card card-body border border-0">
+
+{% for comment in yard.comments.all %}
+
+<div class="card mb-3 border border-0">
+  <div class="row g-0">
+    <div class="col-md-2 p-2">
+      {% if comment.user.profile.profile_image %}
+        <img
+          src="{{ comment.user.profile.profile_image.url }}"
+          alt=""
+          class="img-fluid rounded-circle mx-auto d-block avatar-sm"
+          style="max-width: 5vw; height: 100%"
+        />
+        {% else %}
+        <img
+          src="{% static 'images/default_profile_pic.png' %}"
+          alt="{{comment.user.username}}"
+          class="img-fluid rounded-circle mx-auto d-block avatar-sm"
+          style="max-width: 5vw; height: 100%"
+        />
+        {% endif %}
+    </div>
+    
+    <div class="col-md-8">
+      <div class="card-body">
+        <h5 class="card-title fs-6">{{ comment.user.username}}</h5>
+        <p class="card-text fs-6"><small class="text-body-secondary">Replied {{ comment.created_at }}</small></p>  
+      </div>
+    </div>
+    <div class="col-md-2 btn-group" role="group">
+      {% if request.user.username == comment.user.username %}
+      <!-- Button trigger modal -->
+      <button type="button" class="btn btn-link" data-bs-toggle="modal" data-bs-target="#deleteCommentModal">
+        <i class="fa-regular fa-trash-can text-danger"></i>
+      </button>
+
+      <!-- Delete Modal -->
+      <div class="modal fade" id="deleteCommentModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="deleteCommentModalLabel">Delete comment?</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              Please confirm
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary" action="{% url 'comment_delete' comment.id %}"><a style="color:white" href="{% url 'comment_delete' comment.id %}">Confirm</a></button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <button type="button" class="btn btn-link">
+      <a href="{% url 'edit_comment' yard.id comment.id %}">
+        <i class="fa-solid fa-pen-to-square text-dark"></i>
+      </a>
+    </button>
+
+    {% endif %}
+    </div>
+  </div>
+
+  <div class="row g-0">
+
+    <div class="col-md-12">
+      <div class="card-body">
+        <small>
+        <p class="card-text">{{comment.body}}</p>
+        </small>  
+        <div class="btn-group" role="group" aria-label="yard bottom actions">
+          <!-- reaction button -->
+          <button type="button" class="btn btn-link">
+            <a class="text-dark" href="{% url 'comment_like' comment.id %}">
+              {{ comment.number_of_likes }}
+              {% if user in comment.likes.all %}
+                <i class="fa-solid fa-thumbs-up text-dark"></i>
+              {% else %} 
+                <i class="fa-regular fa-thumbs-up text-dark"></i>
+              {% endif %}
+            </a>
+            <a class="text-dark" href="{% url 'comment_dislike' comment.id %}">
+              {{ comment.number_of_dislikes }} 
+              {% if user in comment.dislikes.all %}
+                <i class="fa-solid fa-thumbs-down text-dark"></i>
+              {% else %} 
+                <i class="fa-regular fa-thumbs-down text-dark"></i>
+            {% endif %}
+            </a>
+          </button>
+          <!-- Comment button -->
+          <button type="button" class="btn btn-link" data-bs-toggle="collapse" href="#reply{{comment.id}}" role="button" aria-expanded="false" aria-controls="reply{{comment.id}}">
+            {{ comment.replies.count }} <i class="fa-solid fa-reply text-dark"></i>
+          </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <!-- comment section modal -->
+  <div class="collapse" id="reply{{comment.id}}">
+    <div class="card card-body border border-0">
+      {% include 'home/h_reply.html' %}
+    </div>    
+  </div>
+</div>
+{% endfor %}
+      <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->
+    </div>    
+  </div>
+</div>
+
+
+{% endblock %}

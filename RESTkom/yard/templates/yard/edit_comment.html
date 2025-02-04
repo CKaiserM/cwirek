@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="container text-center">
+<div class="row">
+    <div class="col-8">
+            <div class="alert alert-dark" role="alert">
+            <div class="container">
+                <div class="row">
+                  <div class="col-1">
+
+                    {% if comment.user.profile.profile_image %}
+                    <img src="{{ comment.user.profile.profile_image.url }}" alt="" class="rounded-circle" width=50 height=50>
+                    {% else %}
+                    <img src="{% static 'images/default_profile_pic.png' %}" alt="{{comment.user.username}}" class="rounded-circle" width=50 height=50>
+                    {% endif %}
+                  
+                  </div>
+                  <div class="col-10">
+                        {{ comment.body }}<br/>
+                        <small class="text-muted">
+                            {{ comment.created_at }} By @{{ comment.user.username|lower}}
+                            {% if user in yard.likes.all %}
+                            - {{comment.number_of_likes}} Likes - <a href="{% url 'comment_like' comment.id %}">Unlike</a>
+                            {% else %}
+                            - {{comment.number_of_likes}} Likes - <a href="{% url 'comment_like' comment.id %}">Like</a>
+                            {% endif %}
+
+                            {% if user in comment.dislikes.all %}
+                            - {{comment.number_of_dislikes}} Disikes - <a href="{% url 'comment_dislike' comment.id %}">Undislike</a>
+                            {% else %}
+                            - {{comment.number_of_dislikes}} Dislikes - <a href="{% url 'comment_dislike' comment.id %}">Dislike</a>
+                            {% endif %}
+                        </small>
+                </div><br/><br/>
+              </div>
+            </div>
+          </div>
+
+
+        {% if commentform %}
+        <form method=POST>
+        {% csrf_token %}
+            {{ commentform.as_p }}
+            <button type="submit" class="btn btn-secondary">Submit</button>
+        </form>
+        {% endif %}
+    </div>
+</div></div>
+{% endblock %}

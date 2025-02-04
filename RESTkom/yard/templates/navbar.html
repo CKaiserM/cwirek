@@ -1,0 +1,53 @@
+{% load static %} 
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="{% url 'home' %}">
+        <i class="fa-solid fa-tree-city"></i>
+    </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarScroll" aria-controls="navbarScroll" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarScroll">
+        <ul class="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll" style="--bs-scroll-height: 100px;">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="{% url 'home' %}">Home</a>
+          </li>
+          {% if user.is_authenticated %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'profile' request.user.id %}">My Profile</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'profile_list' %}">Profile list</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+        </li>
+        {% else %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'register' %}">Register</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'login' %}">Login</a>
+        </li>
+        {% endif %}
+        <li class="nav-item">
+          <a href="{% url 'notifications' %}">
+            <button type="button" class="btn position-relative">
+              <i class="fa-solid fa-bell"></i> Notifications
+              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">       
+                  {{ unread_notifications }}
+              </span>
+            </button></a>
+        </li>
+        </ul>
+
+        <form class="d-flex" action="{% url 'search_all' %}" method="POST">
+          {% csrf_token %}
+          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="search">
+          <button class="btn btn-outline-success" type="submit">Search</button>
+        </form>
+
+
+      </div>
+    </div>
+  </nav>

@@ -1,0 +1,75 @@
+{% load static %} 
+<!-- Button trigger modal -->
+<div class="d-grid gap-2">
+<button type="button" class="btn btn-primary btn-lg" data-bs-toggle="modal" data-bs-target="#postYard">
+    Post Yard
+  </button>
+</div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="postYard" tabindex="-1" aria-labelledby="postYardLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+                <div class="row g-0">
+                  <div class="col-md-4">
+                    {% if user.profile.profile_image %}
+                    <img
+                      src="{{ user.profile.profile_image.url }}"
+                      class="img-fluid rounded-circle avatar-sm"
+                      alt="{{user.username}}"
+                      width="50"
+                      height="50"
+                    />
+                    {% else %}
+                    <img
+                      src="{% static 'images/default_profile_pic.png' %}"
+                      class="img-fluid rounded-circle avatar-sm"
+                      alt="{{user.username}}"
+                      width="50"
+                      height="50"
+                      />
+                    {% endif %}
+                  </div>
+                  <div class="col-md-8">
+                    <div class="card-body">
+                      <h5 class="card-title">{{ user.username }}</h5>
+                    </div>
+                  </div>
+                </div>
+            
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>            
+        {% if form %}
+        <form method="POST" enctype="multipart/form-data">
+        <div class="modal-body">
+                {% csrf_token %} 
+                {{ form.as_p }}
+                <p class="text-end" id="remaining-chars"></p>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Post your Yard</button>
+        </div>
+      </form>
+
+<script>
+  function countChars(e) {
+    document.querySelector("#remaining-chars").innerHTML = e.target.maxLength - e.target.value.length + " characters left"
+  }
+  document.querySelector("#postYard").addEventListener("input", countChars)
+</script>
+      {% endif %}
+      </div>
+    </div>
+  </div>
+  
+
+
+
+
+  
+
+
+
+
+
