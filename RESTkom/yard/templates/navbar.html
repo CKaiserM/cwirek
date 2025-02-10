@@ -22,6 +22,15 @@
         <li class="nav-item">
           <a class="nav-link" href="{% url 'logout' %}">Logout</a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'notifications' %}">
+            <button type="button" class="btn position-relative">Notifications
+              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger mt-2">       
+                  {{ unread_notifications }}
+              </span>
+            </button>
+          </a>
+        </li>
         {% else %}
         <li class="nav-item">
           <a class="nav-link" href="{% url 'register' %}">Register</a>
@@ -30,27 +39,12 @@
           <a class="nav-link" href="{% url 'login' %}">Login</a>
         </li>
         {% endif %}
-        <li class="nav-item">
-          <a href="{% url 'notifications' %}">
-            <button type="button" class="btn position-relative">Notifications
-              <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger mt-2">       
-                  {{ unread_notifications }}
-              </span>
-            </button>
-          </a>
-        </li>
         </ul>
-
-
-  
-
         <form class="d-flex" action="{% url 'search_all' %}" method="POST">
           {% csrf_token %}
           <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" name="search">
           <button class="btn btn-outline-success" type="submit">Search</button>
         </form>
-
-
       </div>
     </div>
   </nav>
