@@ -133,6 +133,13 @@ class ProfileView(APIView):
         else:
             messages.success(request, ("You Must Be Logged In To View That Page..."))
             return redirect('home')
+        
+    def delete_user(request):
+        if request.user.is_authenticated:
+            del_user = User.objects.get(id=request.user.id)
+            del_user.delete()
+            messages.success(request, ("Your Profile Has Been Deleted!"))
+            return redirect('home')
 
 class ProfileListView(APIView):
     renderer_classes = [TemplateHTMLRenderer]

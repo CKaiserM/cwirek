@@ -36,9 +36,33 @@
     </div>
     <div class="col-3 position-relative ">
       {% if request.user.id == profile.user.id %}
-      <a href="{% url 'update_user' %}" class="btn btn-outline-secondary position-absolute top-0 end-0">
+      <a href="{% url 'update_user' %}" class="btn btn-outline-secondary float-end m-2">
         <i class="fa-solid fa-user-pen"></i>
       </a>
+      <button type="button" class="btn btn-danger float-end m-2" data-bs-toggle="modal" data-bs-target="#deleteProfileModal">
+        <i class="fa-solid fa-person-circle-minus"></i>
+      </button>
+      <div class="modal fade" id="deleteProfileModal" tabindex="-1" aria-labelledby="deleteProfileModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h1 class="modal-title fs-5" id="deleteProfileModalLabel">Please confirm</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              To remove your profile please confirm.
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-danger">      
+                <a href="{% url 'delete_user' %}" class="modal-link">  
+                  Remove profile
+                </a>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
       {% endif %}
     </div>
   </div>

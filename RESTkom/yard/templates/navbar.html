@@ -23,12 +23,12 @@
           <a class="nav-link" href="{% url 'logout' %}">Logout</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="{% url 'notifications' %}">
-            <button type="button" class="btn position-relative">Notifications
+          <a class="nav-link position-relative" href="{% url 'notifications' %}">
+            Notifications
               <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger mt-2">       
                   {{ unread_notifications }}
               </span>
-            </button>
+         
           </a>
         </li>
         {% else %}

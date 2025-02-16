@@ -20,6 +20,7 @@ urlpatterns = [
     path('reset/<uidb64>/<token>', auth_views.PasswordResetConfirmView.as_view(), name="password_reset_confirm"),
     path('reset_password_complete/', auth_views.PasswordResetCompleteView.as_view(template_name="profile/password_reset_complete.html"), name="password_reset_complete"),
     path('password-change/', views.ChangePasswordView.as_view(), name='change_password'),
+    path('delete_profile/', views.ProfileView.delete_user, name="delete_user"),
     #Yard
     path('yard/', views.YardView.as_view()),
     path('yard_likes/<int:pk>', views.YardView.yard_like, name="yard_like"),

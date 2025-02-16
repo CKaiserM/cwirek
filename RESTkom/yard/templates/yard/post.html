@@ -48,34 +48,26 @@
         {% if form %}
         <form method="POST">
         <div class="modal-body">
-
-                {% csrf_token %} {{ form.as_p }}
+                {% csrf_token %} 
+                {{ form.as_p }}
                 <p class="text-end" id="remaining-chars"></p>
         </div>
         <div class="modal-footer">
-
-            
           <button type="submit" class="btn btn-primary">Post your Yard</button>
         </div>
       </form>
 
-
-
-
       <script>
 
-function countChars(e) {
+      function countChars(e) {
 
-  document.querySelector("#remaining-chars").innerHTML = e.target.maxLength - e.target.value.length + " characters left"
-}
+        document.querySelector("#remaining-chars").innerHTML = e.target.maxLength - e.target.value.length + " characters left"
+      }
 
-
-// use addEventListener rather that inline event handler
-// event object is automatically passed to event handler
-document.querySelector("#postYard").addEventListener(
-  "input",
-  countChars
-)
+        document.querySelector("#postYard").addEventListener(
+          "input",
+          countChars
+        )
       </script>
       {% endif %}
       </div>
